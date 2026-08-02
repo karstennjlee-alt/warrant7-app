@@ -1,0 +1,108 @@
+{
+  "_note": "PROVISIONAL. T-01 requires the golden vectors the web repo uses, byte for byte - do not maintain a second set. These eight were authored from RFC 8785 directly because the web repo was not available on this machine. Replace this whole file with the web repo's fixture and re-run; the test reads it and asserts nothing else.",
+  "vectors": [
+    {
+      "name": "utf16-key-ordering",
+      "why": "RFC 8785 sorts by UTF-16 code units. The emoji's lead surrogate 0xD83D sorts BEFORE U+FB33, where a scalar-value sort puts it after.",
+      "input": {
+        "€": "Euro Sign",
+        "\r": "Carriage Return",
+        "דּ": "Hebrew Letter Dalet With Dagesh",
+        "1": "One",
+        "😀": "Emoji: Grinning Face",
+        "": "Control",
+        "ö": "Latin Small Letter O With Diaeresis"
+      },
+      "canonical": "{\"\\r\":\"Carriage Return\",\"1\":\"One\",\"\":\"Control\",\"ö\":\"Latin Small Letter O With Diaeresis\",\"€\":\"Euro Sign\",\"😀\":\"Emoji: Grinning Face\",\"דּ\":\"Hebrew Letter Dalet With Dagesh\"}"
+    },
+    {
+      "name": "ecmascript-numbers",
+      "why": "Number output follows ECMAScript Number::toString, not printf.",
+      "input": {
+        "s": 0.1,
+        "t": -0.0,
+        "u": 1.5,
+        "v": 100,
+        "w": 9007199254740992,
+        "x": 1e-06,
+        "y": 1e-07,
+        "z": 1e+21
+      },
+      "canonical": "{\"s\":0.1,\"t\":0,\"u\":1.5,\"v\":100,\"w\":9007199254740992,\"x\":0.000001,\"y\":1e-7,\"z\":1e+21}"
+    },
+    {
+      "name": "nesting-and-whitespace",
+      "why": "Members sort at every depth; array order is data and is preserved.",
+      "input": {
+        "b": [
+          1,
+          2,
+          {
+            "z": true,
+            "a": null
+          }
+        ],
+        "a": "x"
+      },
+      "canonical": "{\"a\":\"x\",\"b\":[1,2,{\"a\":null,\"z\":true}]}"
+    },
+    {
+      "name": "string-escapes",
+      "why": "Only the mandated escapes, short forms where they exist, sub-0x20 as u00xx.",
+      "input": {
+        "k": "a\"b\\c\b\t\n\f\r\u0001é"
+      },
+      "canonical": "{\"k\":\"a\\\"b\\\\c\\b\\t\\n\\f\\r\\u0001é\"}"
+    },
+    {
+      "name": "receipt-body",
+      "why": "The shape this product actually hashes.",
+      "input": {
+        "seq": 7,
+        "event": "ISSUED",
+        "actor": "Support Agent 01",
+        "resource": "refund.create",
+        "recipient": "Northwind",
+        "amount_minor": 240000,
+        "currency": "USD",
+        "ts": "2026-08-02T14:22:07Z",
+        "prev": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "canonical": "{\"actor\":\"Support Agent 01\",\"amount_minor\":240000,\"currency\":\"USD\",\"event\":\"ISSUED\",\"prev\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"recipient\":\"Northwind\",\"resource\":\"refund.create\",\"seq\":7,\"ts\":\"2026-08-02T14:22:07Z\"}"
+    },
+    {
+      "name": "unicode-passthrough",
+      "why": "Non-ASCII is emitted literally as UTF-8, never as escapes.",
+      "input": {
+        "café": "naïve ☕",
+        "emoji": "🔒"
+      },
+      "canonical": "{\"café\":\"naïve ☕\",\"emoji\":\"🔒\"}"
+    },
+    {
+      "name": "empty-containers-and-key",
+      "why": "The empty key sorts first; empty containers survive.",
+      "input": {
+        "b": {},
+        "a": [],
+        "c": [
+          {}
+        ],
+        "": "empty key"
+      },
+      "canonical": "{\"\":\"empty key\",\"a\":[],\"b\":{},\"c\":[{}]}"
+    },
+    {
+      "name": "literals",
+      "why": "Booleans must not bridge through NSNumber into 0 and 1.",
+      "input": {
+        "t": true,
+        "f": false,
+        "n": null,
+        "zero": 0,
+        "one": 1
+      },
+      "canonical": "{\"f\":false,\"n\":null,\"one\":1,\"t\":true,\"zero\":0}"
+    }
+  ]
+}
