@@ -92,9 +92,31 @@ The design has four (Queue, Limits, Receipts, Lab); §5.5 wants Verify as a stan
 works signed out. Built five — Queue, Receipts, Verify, Limits, Lab — with Activity and Settings
 behind the queue header, so no required screen was dropped and no tab is a rarely-used slot.
 
-## 8. Git
+## 8. Configuration status
 
-`warrant-ios/` is **not** a git repository. §13 asks for a commit at every gate; the opening
-instruction says ask before touching git history. Say the word and I'll `git init` and commit —
-`.gitignore` is already written and already excludes `Config.xcconfig`, `*.p8` and the generated
-`.xcodeproj`.
+`Config.xcconfig` is written locally and gitignored. Verified against the live project:
+`GET /auth/v1/settings` returns 200 and reports `"email": true`, which is what magic-link
+sign-in needs.
+
+| key | value |
+|---|---|
+| `SUPABASE_URL` | `https://vdphbmkosmgcyzvvhexh.supabase.co` — verified |
+| `SUPABASE_ANON_KEY` | publishable key — verified against that project |
+| `API_BASE_URL` | **empty — nothing is deployed** |
+
+Because the gateway is absent the app runs the demo path, which is the specified §9.2
+behaviour rather than a fallback: real Ed25519 signatures, real on-device verification, and
+real failure when a record is edited. Fill in `API_BASE_URL` and it switches to the live
+source with no code change.
+
+`PostgREST` returns 401 for this key at `/rest/v1/`. It does not matter here — the app uses
+Supabase for Auth and Realtime only, and reads all data through the gateway (§4) — but it is
+worth knowing if you expect direct table reads from a client.
+
+## 9. Repository
+
+Pushed to `github.com/karstennjlee-alt/warrant7-app` on `main`. The repo is **public**.
+`Config.xcconfig`, `*.p8`, provisioning profiles and the generated `.xcodeproj` are gitignored,
+and every staged file was scanned for `sb_publishable_`, `sb_secret_`, `service_role` and JWT
+prefixes before the push. The generated `Info.plist` carries `$(SUPABASE_ANON_KEY)`
+placeholders, not resolved values.
