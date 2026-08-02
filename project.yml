@@ -1,0 +1,184 @@
+name: Warrant
+options:
+  bundleIdPrefix: ${BUNDLE_ID_PREFIX}
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+configFiles:
+  Debug: Config.xcconfig
+  Release: Config.xcconfig
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEVELOPMENT_TEAM: ${TEAM_ID}
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  WarrantKit:
+    path: WarrantKit
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.0.0"
+
+targets:
+
+  # ── App ────────────────────────────────────────────────────────────────────
+  Warrant:
+    type: application
+    platform: iOS
+    sources:
+      - path: Warrant
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ${BUNDLE_ID}
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+    dependencies:
+      - package: WarrantKit
+      - package: Supabase
+        product: Supabase
+      - target: WarrantWidgets
+        embed: true
+    info:
+      path: Warrant/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Warrant
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+
+        # §8: light appearance only. The paper metaphor requires paper; a half-hearted
+        # dark mode would read worse than none. Do not "fix" this.
+        UIUserInterfaceStyle: Light
+
+        # §3: non-secret configuration, surfaced from Config.xcconfig. The Supabase anon
+        # key is publishable by design and is protected by Row Level Security — it is not
+        # a leak. No service-role key, provider credential, or signing key appears here.
+        WarrantAPIBaseURL: $(API_BASE_URL)
+        WarrantSupabaseURL: $(SUPABASE_URL)
+        WarrantSupabaseAnonKey: $(SUPABASE_ANON_KEY)
+
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+
+        NSFaceIDUsageDescription: >-
+          Warrant asks for Face ID before you approve an action, so an approval can only come
+          from you. Denying never asks.
+        NSCameraUsageDescription: >-
+          Warrant uses the camera to scan an evidence bundle or an approval code. Nothing is
+          uploaded, and scanning works with networking off.
+
+        NSSupportsLiveActivities: true
+        NSSupportsLiveActivitiesFrequentUpdates: true
+        UIBackgroundModes:
+          - remote-notification
+
+        CFBundleURLTypes:
+          - CFBundleURLName: $(BUNDLE_ID)
+            CFBundleURLSchemes:
+              - $(APP_SCHEME)
+
+        UIAppFonts:
+          - ArchivoExpanded-SemiBold.ttf
+          - ArchivoExpanded-Bold.ttf
+          - PublicSans-Regular.ttf
+          - PublicSans-Medium.ttf
+          - PublicSans-SemiBold.ttf
+          - JetBrainsMono-Regular.ttf
+          - JetBrainsMono-Medium.ttf
+    entitlements:
+      path: Warrant/Resources/Warrant.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.$(BUNDLE_ID)
+        aps-environment: development
+
+  # ── Widget + Live Activity extension ───────────────────────────────────────
+  WarrantWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: WarrantWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ${BUNDLE_ID}.widgets
+    dependencies:
+      - package: WarrantKit
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+      - sdk: ActivityKit.framework
+      - sdk: AppIntents.framework
+    info:
+      path: WarrantWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Warrant
+        UIUserInterfaceStyle: Light
+        UIAppFonts:
+          - ArchivoExpanded-SemiBold.ttf
+          - PublicSans-Medium.ttf
+          - JetBrainsMono-Medium.ttf
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: WarrantWidgets/WarrantWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.$(BUNDLE_ID)
+
+  # ── Unit tests (§10). Depend on WarrantKit only; the app target is never imported. ──
+  # Sources point at the package's test directory so there is exactly one copy of every
+  # test file, runnable either as `xcodebuild test` or as `swift test` from WarrantKit/.
+  WarrantTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: WarrantKit/Tests/WarrantKitTests
+      - path: WarrantTests
+        optional: true
+    dependencies:
+      - package: WarrantKit
+
+  # ── UI tests (§10): sign-in through denial, and tampered-bundle verification ──
+  WarrantUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: WarrantUITests
+    dependencies:
+      - target: Warrant
+
+schemes:
+  Warrant:
+    build:
+      targets:
+        Warrant: all
+        WarrantWidgets: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-WarrantDemoMode 1": false
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - WarrantTests
+        - WarrantUITests
+    profile:
+      config: Release
+    archive:
+      config: Release
