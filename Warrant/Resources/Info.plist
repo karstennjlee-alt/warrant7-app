@@ -31,6 +31,11 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Warrant uses the camera to scan an evidence bundle or an approval code. Nothing is uploaded, and scanning works with networking off.</string>
 	<key>NSFaceIDUsageDescription</key>
@@ -68,6 +73,8 @@
 	<string>Light</string>
 	<key>WarrantAPIBaseURL</key>
 	<string>$(API_BASE_URL)</string>
+	<key>WarrantDevToken</key>
+	<string>$(WARRANT_DEV_TOKEN)</string>
 	<key>WarrantSupabaseAnonKey</key>
 	<string>$(SUPABASE_ANON_KEY)</string>
 	<key>WarrantSupabaseURL</key>

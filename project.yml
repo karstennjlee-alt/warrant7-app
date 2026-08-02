@@ -69,6 +69,12 @@ targets:
         WarrantAPIBaseURL: $(API_BASE_URL)
         WarrantSupabaseURL: $(SUPABASE_URL)
         WarrantSupabaseAnonKey: $(SUPABASE_ANON_KEY)
+        WarrantDevToken: $(WARRANT_DEV_TOKEN)
+
+        # Cleartext to localhost, .local and link-local only — not arbitrary HTTP. The gateway
+        # runs on the same machine during development; a deployed one is HTTPS and unaffected.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
 
         UILaunchScreen:
           UIColorName: LaunchBackground
@@ -169,7 +175,9 @@ targets:
     sources:
       - path: WarrantKit/Tests/WarrantKitTests
         excludes: ["Fixtures"]
-      - path: WarrantKit/Tests/WarrantKitTests/Fixtures/canonical-vectors.json
+      # The whole folder, so a new fixture is picked up by both build systems without a
+      # second edit here. swift test finds them via Bundle.module; this is the Xcode half.
+      - path: WarrantKit/Tests/WarrantKitTests/Fixtures
         buildPhase: resources
       - path: WarrantTests
         optional: true

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warrant console</title>
+<style>
+  :root { --ink:#14181C; --soft:#6A737F; --mute:#899099; --line:#E6E8E4; --fill:#F0F1EE;
+          --green:#1B7A5A; --red:#CE3F2E; --ochre:#B8801E; --blue:#2B3BD6; --surface:#F7F8F6; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#F4F5F2; color:var(--ink); font:400 15px/1.5 ui-sans-serif,system-ui,sans-serif;
+         letter-spacing:-0.011em; }
+  main { max-width:760px; margin:0 auto; padding:40px 20px 80px; }
+  h1 { font-size:24px; font-weight:600; letter-spacing:-0.025em; margin:0 0 6px; }
+  .sub { color:var(--soft); font-size:13.5px; margin:0 0 28px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:12px; }
+  .label { font-size:12.5px; font-weight:500; color:var(--mute); margin-bottom:12px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  button { flex:1; min-width:150px; padding:15px 14px; border-radius:14px; border:1px solid var(--line);
+           background:#fff; color:var(--ink); font:500 14px/1.2 inherit; cursor:pointer; text-align:left; }
+  button:hover { border-color:var(--mute); }
+  button b { display:block; font-size:15px; margin-bottom:3px; }
+  button span { color:var(--soft); font-weight:400; font-size:12.5px; }
+  button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  button.primary span { color:#c8ccd2; }
+  button.danger { color:var(--red); border-color:#E6D2CF; }
+  button.danger span { color:var(--soft); }
+  pre { background:var(--surface); border-radius:12px; padding:14px; overflow:auto; font:400 11.5px/1.7 ui-monospace,monospace;
+        color:var(--ink); margin:0; max-height:280px; }
+  .pill { display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px;
+          font-size:12.5px; font-weight:500; }
+  .dot { width:6px; height:6px; border-radius:50%; }
+  .ok { background:rgba(27,122,90,.1); color:var(--green); } .ok .dot { background:var(--green); }
+  .bad { background:rgba(206,63,46,.1); color:var(--red); } .bad .dot { background:var(--red); }
+  .note { color:var(--soft); font-size:13px; margin-top:12px; }
+  code { font:400 12px ui-monospace,monospace; background:var(--fill); padding:2px 5px; border-radius:5px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Warrant console</h1>
+  <p class="sub">Stands in for the agent and the operator. The phone is the other half.</p>
+
+  <div class="card">
+    <div class="label">The agent tries something</div>
+    <div class="row">
+      <button onclick="refund(12000,'P. Novak',false)">
+        <b>$120.00</b><span>inside the automatic limit — executes, nobody is paged</span>
+      </button>
+      <button class="primary" onclick="refund(240000,'Northwind',true)">
+        <b>$2,400.00</b><span>prompt-injected — pauses, lands on the phone</span>
+      </button>
+      <button onclick="refund(890000,'K. Mensah',false)">
+        <b>$8,900.00</b><span>above the hard stop — blocked outright</span>
+      </button>
+    </div>
+    <p class="note">Policy is deterministic: allow at or below $500, ask a human to $5,000, block above. No model is consulted.</p>
+  </div>
+
+  <div class="card">
+    <div class="label">Act three — edit the evidence</div>
+    <div class="row">
+      <button class="danger" onclick="tamper()">
+        <b>Alter a stored record</b><span>changes an amount in place, without re-signing it</span>
+      </button>
+      <button onclick="reset()">
+        <b>Reset</b><span>clears approvals and the ledger</span>
+      </button>
+    </div>
+    <p class="note">Then run <b>Verify</b> on the phone. Nothing here can make a refund happen after the fact — the worst a forger achieves is a ledger that announces it has been forged.</p>
+  </div>
+
+  <div class="card">
+    <div class="label">Ledger self-check <span id="verdict"></span></div>
+    <pre id="out">loading…</pre>
+    <p class="note">The server checking its own chain proves very little — that is the point of the phone doing it independently, against the published public key, with the network off.</p>
+  </div>
+</main>
+
+<script>
+const out = document.getElementById('out');
+const verdict = document.getElementById('verdict');
+
+async function post(path, body) {
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body ?? {})
+  });
+  return res.json();
+}
+
+async function refresh() {
+  const check = await (await fetch('/api/lab/selfcheck')).json();
+  verdict.innerHTML = check.ok
+    ? `<span class="pill ok"><span class="dot"></span>${check.count} records verify</span>`
+    : `<span class="pill bad"><span class="dot"></span>record ${check.index + 1} — ${check.reason}</span>`;
+  out.textContent = JSON.stringify(check, null, 2);
+}
+
+async function refund(amount_minor, recipient, injected) {
+  out.textContent = JSON.stringify(await post('/api/agent/refund', { amount_minor, recipient, injected }), null, 2);
+  setTimeout(refresh, 400);
+}
+
+async function tamper() {
+  const check = await (await fetch('/api/lab/selfcheck')).json();
+  const seq = check.ok ? check.count : 1;
+  out.textContent = JSON.stringify(await post('/api/lab/tamper', { seq, amount_minor: 24000000 }), null, 2);
+  setTimeout(refresh, 400);
+}
+
+async function reset() {
+  await post('/api/demo/reset');
+  refresh();
+}
+
+refresh();
+setInterval(refresh, 4000);
+</script>
+</body>
+</html>
