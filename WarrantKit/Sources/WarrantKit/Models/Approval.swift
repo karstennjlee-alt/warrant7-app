@@ -48,6 +48,17 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
     /// The exact action this approval binds to. Approving binds to this and nothing broader.
     public let boundDigest: String
 
+    /// What the agent said it was doing, in its own words. Shown verbatim so a person can
+    /// judge the reasoning rather than a summary of it.
+    public let agentStatement: String?
+    /// The source text the agent read — a support ticket, an email, a form. Untrusted by
+    /// definition, and shown as such.
+    public let sourceText: String?
+    /// The span of `sourceText` that is an instruction wearing a system voice. Highlighted so
+    /// a prompt injection is visible to a human eye rather than only to a filter.
+    public let sourceInjection: String?
+    public let reference: String?
+
     public let createdAt: Date
     public let expiresAt: Date
 
@@ -62,6 +73,8 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         id: String, orgID: String, actionLine: String, amount: Money, requestedBy: String,
         resource: String, impact: String, reversibility: String, whyReviewing: String,
         boundDigest: String, createdAt: Date, expiresAt: Date, status: ApprovalStatus,
+        agentStatement: String? = nil, sourceText: String? = nil, sourceInjection: String? = nil,
+        reference: String? = nil,
         decidedAt: Date? = nil, decidedBy: String? = nil, denialReason: String? = nil,
         receiptSequence: Int? = nil
     ) {
@@ -75,6 +88,10 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         self.reversibility = reversibility
         self.whyReviewing = whyReviewing
         self.boundDigest = boundDigest
+        self.agentStatement = agentStatement
+        self.sourceText = sourceText
+        self.sourceInjection = sourceInjection
+        self.reference = reference
         self.createdAt = createdAt
         self.expiresAt = expiresAt
         self.status = status
@@ -106,6 +123,11 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         return "sha256:\(hex.prefix(4))…\(hex.suffix(4))"
     }
 
+    /// The recipient, pulled off the action line for the places that need it alone.
+    public var recipient: String {
+        actionLine.components(separatedBy: " to ").last ?? actionLine
+    }
+
     // MARK: - Codable
 
     private enum CodingKeys: String, CodingKey {
@@ -120,6 +142,10 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         case reversibility
         case whyReviewing = "why_reviewing"
         case boundDigest = "bound_digest"
+        case agentStatement = "agent_statement"
+        case sourceText = "source_text"
+        case sourceInjection = "source_injection"
+        case reference
         case createdAt = "created_at"
         case expiresAt = "expires_at"
         case status
@@ -144,6 +170,10 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         reversibility = try c.decode(String.self, forKey: .reversibility)
         whyReviewing = try c.decode(String.self, forKey: .whyReviewing)
         boundDigest = try c.decode(String.self, forKey: .boundDigest)
+        agentStatement = try c.decodeIfPresent(String.self, forKey: .agentStatement)
+        sourceText = try c.decodeIfPresent(String.self, forKey: .sourceText)
+        sourceInjection = try c.decodeIfPresent(String.self, forKey: .sourceInjection)
+        reference = try c.decodeIfPresent(String.self, forKey: .reference)
         createdAt = try c.decode(Date.self, forKey: .createdAt)
         expiresAt = try c.decode(Date.self, forKey: .expiresAt)
         status = try c.decode(ApprovalStatus.self, forKey: .status)
@@ -166,6 +196,10 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         try c.encode(reversibility, forKey: .reversibility)
         try c.encode(whyReviewing, forKey: .whyReviewing)
         try c.encode(boundDigest, forKey: .boundDigest)
+        try c.encodeIfPresent(agentStatement, forKey: .agentStatement)
+        try c.encodeIfPresent(sourceText, forKey: .sourceText)
+        try c.encodeIfPresent(sourceInjection, forKey: .sourceInjection)
+        try c.encodeIfPresent(reference, forKey: .reference)
         try c.encode(createdAt, forKey: .createdAt)
         try c.encode(expiresAt, forKey: .expiresAt)
         try c.encode(status, forKey: .status)

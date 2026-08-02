@@ -16,11 +16,19 @@ struct GoldenVectorTests {
         let canonical: String
     }
 
+    /// These files compile both as a SwiftPM test target and as the Xcode `WarrantTests`
+    /// target, and only the first has `Bundle.module`. One fixture, two build systems.
+    static var fixtureURL: URL? {
+        #if SWIFT_PACKAGE
+        Bundle.module.url(forResource: "canonical-vectors", withExtension: "json", subdirectory: "Fixtures")
+            ?? Bundle.module.url(forResource: "canonical-vectors", withExtension: "json")
+        #else
+        Bundle(for: FixtureToken.self).url(forResource: "canonical-vectors", withExtension: "json")
+        #endif
+    }
+
     static func fixture() throws -> (vectors: [Vector], inputs: [JSONValue]) {
-        guard let url = Bundle.module.url(forResource: "canonical-vectors", withExtension: "json", subdirectory: "Fixtures")
-                ?? Bundle.module.url(forResource: "canonical-vectors", withExtension: "json") else {
-            throw Failure.fixtureMissing
-        }
+        guard let url = fixtureURL else { throw Failure.fixtureMissing }
         let data = try Data(contentsOf: url)
         let vectors = try JSONDecoder().decode(Document.self, from: data).vectors
         // Inputs are arbitrary JSON, so they are read through JSONValue rather than Decodable.
@@ -33,6 +41,7 @@ struct GoldenVectorTests {
 
     struct Document: Decodable { let vectors: [Vector] }
     enum Failure: Error { case fixtureMissing }
+    final class FixtureToken {}
 
     @Test("Every golden vector canonicalizes byte for byte")
     func goldenVectors() throws {

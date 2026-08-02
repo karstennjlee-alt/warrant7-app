@@ -8,13 +8,13 @@ import WarrantKit
 /// should not be "fixed" later by moving it server-side. What is never here — not in this
 /// file, not in Info.plist, not in the bundle — is a service-role key, a downstream provider
 /// credential, or the ledger signing key.
-public struct Configuration: Sendable {
+public struct AppConfiguration: Sendable {
     public let apiBaseURL: URL?
     public let supabaseURL: URL?
     public let supabaseAnonKey: String?
     public let appGroup: String
 
-    public static let current = Configuration()
+    public static let current = AppConfiguration()
 
     private init() {
         let info = Bundle.main.infoDictionary

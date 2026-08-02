@@ -41,6 +41,7 @@ targets:
     platform: iOS
     sources:
       - path: Warrant
+      - path: Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ${BUNDLE_ID}
@@ -114,6 +115,10 @@ targets:
     platform: iOS
     sources:
       - path: WarrantWidgets
+      - path: Shared
+      # §2: one implementation of the design system, shared rather than duplicated.
+      - path: Warrant/DesignSystem
+      - path: Warrant/Resources/Fonts
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ${BUNDLE_ID}.widgets
@@ -128,9 +133,14 @@ targets:
       properties:
         CFBundleDisplayName: Warrant
         UIUserInterfaceStyle: Light
+        WarrantAPIBaseURL: $(API_BASE_URL)
         UIAppFonts:
           - ArchivoExpanded-SemiBold.ttf
+          - ArchivoExpanded-Bold.ttf
+          - PublicSans-Regular.ttf
           - PublicSans-Medium.ttf
+          - PublicSans-SemiBold.ttf
+          - JetBrainsMono-Regular.ttf
           - JetBrainsMono-Medium.ttf
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
@@ -146,17 +156,32 @@ targets:
   WarrantTests:
     type: bundle.unit-test
     platform: iOS
-    sources:
-      - path: WarrantKit/Tests/WarrantKitTests
-      - path: WarrantTests
-        optional: true
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: ${BUNDLE_ID}.tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Warrant.app/Warrant
+        BUNDLE_LOADER: $(TEST_HOST)
     dependencies:
       - package: WarrantKit
+      - target: Warrant
+        embed: false
+    sources:
+      - path: WarrantKit/Tests/WarrantKitTests
+        excludes: ["Fixtures"]
+      - path: WarrantKit/Tests/WarrantKitTests/Fixtures/canonical-vectors.json
+        buildPhase: resources
+      - path: WarrantTests
+        optional: true
 
   # ── UI tests (§10): sign-in through denial, and tampered-bundle verification ──
   WarrantUITests:
     type: bundle.ui-testing
     platform: iOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: ${BUNDLE_ID}.uitests
     sources:
       - path: WarrantUITests
     dependencies:
