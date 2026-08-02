@@ -15,6 +15,7 @@ let package = Package(
         .testTarget(
             name: "WarrantKitTests",
             dependencies: ["WarrantKit"],
+            resources: [.copy("Fixtures")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         )
     ]

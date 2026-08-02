@@ -27,6 +27,26 @@ public struct Digest256: Sendable, Hashable, CustomStringConvertible {
         Digest256(bytes: Data(SHA256.hash(data: data)))!
     }
 
+    /// The chained digest of §5.4: `SHA256(previous_hash || canonical)`.
+    ///
+    /// How `previous_hash` is concatenated — as 32 raw bytes or as its 64 ASCII hex
+    /// characters — is a wire-format decision owned by the gateway, so it is a parameter.
+    /// Get this wrong and honest evidence fails verification, which is the single worst
+    /// outcome this product has.
+    public static func chained(
+        previous: Digest256,
+        canonical: Data,
+        linkage: ChainLinkage = .rawBytes
+    ) -> Digest256 {
+        var input = Data()
+        switch linkage {
+        case .rawBytes: input.append(previous.bytes)
+        case .hexASCII: input.append(Data(previous.hex.utf8))
+        }
+        input.append(canonical)
+        return of(input)
+    }
+
     public var hex: String { bytes.hexEncoded }
 
     /// Head and tail, for a card that must stay readable on a phone. Tap reveals ``hex``.
