@@ -24,27 +24,29 @@ only, no SF Symbols for the brand mark, and every rule in §1.
 
 Fonts are OFL and vendored in `Warrant/Resources/Fonts` with their licences.
 
-## 2. Receipt schema and digest construction
+## 2. Receipt schema and digest construction — settled
 
-`ChainVerifier` follows §5.4: `SHA-256(previous_hash ‖ canonical)`, signature over the resulting
-32 digest bytes, `hash` and `signature` excluded from the body before hashing, first record's
-`prev` is 64 zeros.
+`SHA-256(previous_hash ‖ canonical)` with the previous hash as 32 **raw bytes**, and the
+signature over those 32 digest bytes. This is no longer a guess: `gateway/` implements it
+independently in JavaScript, and `GatewayInteropTests` verifies a bundle that server produced
+using the device's `ChainVerifier`. If either side drifts, that test goes red.
 
-**Two wire-format choices are still guesses**, both isolated in `ChainFormat`:
+`ChainFormat` still carries the alternatives (`hexASCII` linkage, `canonicalBody` signatures)
+in case a future gateway differs.
 
-- `ChainLinkage.rawBytes` — the previous hash is concatenated as 32 raw bytes, not as its 64
-  ASCII hex characters. Both are implemented; one edit switches it.
-- `SignaturePayload.digestBytes` — the signature covers the digest, not the canonical body.
+One real bug surfaced doing this, and it is worth knowing about if anyone writes a third
+implementation: JavaScript enumerates integer-like object keys first regardless of insertion
+order, so a canonicalizer that sorts keys and then stores them in an object silently emits
+`{"1":…,"\r":…}` instead of `{"\r":…,"1":…}`. The golden vectors caught it. `gateway/lib/canonical.mjs`
+builds the output string directly and never round-trips through an object.
 
-If the gateway disagrees on either, honest evidence reads as forged. This needs the web
-implementation before Phase 2 can really close.
+## 3. T-01 golden vectors
 
-## 3. T-01 golden vectors are provisional
-
-`WarrantKit/Tests/WarrantKitTests/Fixtures/canonical-vectors.json` holds eight vectors I
-authored from RFC 8785 directly, because the web repo is not on this machine. §10 says import
-theirs and do not keep a second set. Replace that file wholesale and re-run — the test reads it
-and asserts nothing else.
+`WarrantKit/Tests/WarrantKitTests/Fixtures/canonical-vectors.json` holds eight vectors authored
+from RFC 8785 directly. They are now cross-checked against a second implementation — all eight
+agree between Swift and the Node gateway — so they are no longer a single set marking its own
+homework. If a different gateway turns up with its own fixture, replace this file wholesale;
+the test reads it and asserts nothing else.
 
 ## 4. Failure-code ordering
 

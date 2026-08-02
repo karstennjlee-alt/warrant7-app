@@ -1,0 +1,4 @@
+# The organization's Ed25519 signing key and the ledger live here. The key is the one secret
+# this whole system has: anything holding it can mint receipts that verify. It is generated on
+# first run and never leaves the machine.
+.data/

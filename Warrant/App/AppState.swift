@@ -54,12 +54,25 @@ public final class AppState {
         let source: any WarrantDataSource
 
         if configuration.isFullyConfigured, !AppConfiguration.isDemoLaunchArgument,
-           let supabaseURL = configuration.supabaseURL,
-           let anonKey = configuration.supabaseAnonKey,
            let apiBaseURL = configuration.apiBaseURL {
-            let service = SupabaseService(url: supabaseURL, anonKey: anonKey)
+            // Supabase is still built when configured — Realtime uses it — but the dev token
+            // wins for *authentication* when present. A magic link needs an email round-trip
+            // and a dashboard redirect allowlist, so if a developer has deliberately set a dev
+            // token, stopping at a sign-in screen they cannot complete helps nobody.
+            let service = configuration.supabaseURL.flatMap { url in
+                configuration.supabaseAnonKey.map { SupabaseService(url: url, anonKey: $0) }
+            }
             supabase = service
-            let client = APIClient(baseURL: apiBaseURL, sessionProvider: SupabaseSessionProvider(service: service))
+
+            let provider: any SessionProviding
+            if let devToken = configuration.devToken {
+                provider = DevSessionProvider(token: devToken)
+            } else if let service {
+                provider = SupabaseSessionProvider(service: service)
+            } else {
+                provider = UnconfiguredSessionProvider()
+            }
+            let client = APIClient(baseURL: apiBaseURL, sessionProvider: provider)
             source = LiveDataSource(client: client, cache: cache)
             isDemoMode = false
         } else {
@@ -78,6 +91,9 @@ public final class AppState {
     public func start() async {
         WarrantFonts.verifyRegistration()
         if isDemoMode {
+            isSignedIn = true
+        } else if configuration.devToken != nil {
+            // The dev token is the session.
             isSignedIn = true
         } else if let supabase {
             isSignedIn = await supabase.currentSession()
