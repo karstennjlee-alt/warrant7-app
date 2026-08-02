@@ -59,10 +59,15 @@ const server = http.createServer(async (req, res) => {
   if (method === 'OPTIONS') return send(res, 204);
 
   // The console, served unauthenticated so it can be opened in a browser.
-  if (pathname === '/' || pathname === '/index.html') {
-    const html = fs.readFileSync(path.join(HERE, 'public', 'index.html'), 'utf8');
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(html);
+  if (pathname === '/' || pathname === '/index.html' || pathname === '/app.js') {
+    const name = pathname === '/app.js' ? 'app.js' : 'index.html';
+    const file = path.join(HERE, 'public', name);
+    if (!fs.existsSync(file)) return fail(res, 404, 'NOT_FOUND');
+    res.writeHead(200, {
+      'Content-Type': name.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store'
+    });
+    return res.end(fs.readFileSync(file));
   }
 
   // The agent and lab endpoints drive the demo from the console.

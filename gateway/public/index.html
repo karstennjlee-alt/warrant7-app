@@ -4,119 +4,128 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Warrant console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#14181C; --soft:#6A737F; --mute:#899099; --line:#E6E8E4; --fill:#F0F1EE;
-          --green:#1B7A5A; --red:#CE3F2E; --ochre:#B8801E; --blue:#2B3BD6; --surface:#F7F8F6; }
+  /* Same palette as the app, including the three tokens nudged for contrast. */
+  :root {
+    --canvas:#F4F5F2; --surface:#F7F8F6; --card:#fff;
+    --ink:#14181C; --soft:#6A737F; --mute:#899099; --line:#E6E8E4; --fill:#F0F1EE;
+    --green:#1B7A5A; --red:#CE3F2E; --ochre:#B8801E; --blue:#2B3BD6; --band:#E8B44A;
+  }
   * { box-sizing:border-box; }
-  body { margin:0; background:#F4F5F2; color:var(--ink); font:400 15px/1.5 ui-sans-serif,system-ui,sans-serif;
-         letter-spacing:-0.011em; }
-  main { max-width:760px; margin:0 auto; padding:40px 20px 80px; }
-  h1 { font-size:24px; font-weight:600; letter-spacing:-0.025em; margin:0 0 6px; }
-  .sub { color:var(--soft); font-size:13.5px; margin:0 0 28px; }
-  .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:12px; }
-  .label { font-size:12.5px; font-weight:500; color:var(--mute); margin-bottom:12px; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; }
-  button { flex:1; min-width:150px; padding:15px 14px; border-radius:14px; border:1px solid var(--line);
-           background:#fff; color:var(--ink); font:500 14px/1.2 inherit; cursor:pointer; text-align:left; }
-  button:hover { border-color:var(--mute); }
-  button b { display:block; font-size:15px; margin-bottom:3px; }
-  button span { color:var(--soft); font-weight:400; font-size:12.5px; }
-  button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
-  button.primary span { color:#c8ccd2; }
-  button.danger { color:var(--red); border-color:#E6D2CF; }
-  button.danger span { color:var(--soft); }
-  pre { background:var(--surface); border-radius:12px; padding:14px; overflow:auto; font:400 11.5px/1.7 ui-monospace,monospace;
-        color:var(--ink); margin:0; max-height:280px; }
-  .pill { display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px;
-          font-size:12.5px; font-weight:500; }
-  .dot { width:6px; height:6px; border-radius:50%; }
-  .ok { background:rgba(27,122,90,.1); color:var(--green); } .ok .dot { background:var(--green); }
-  .bad { background:rgba(206,63,46,.1); color:var(--red); } .bad .dot { background:var(--red); }
-  .note { color:var(--soft); font-size:13px; margin-top:12px; }
-  code { font:400 12px ui-monospace,monospace; background:var(--fill); padding:2px 5px; border-radius:5px; }
+  body { margin:0; background:var(--canvas); color:var(--ink);
+         font:400 15px/1.5 'Instrument Sans',ui-sans-serif,system-ui,sans-serif; letter-spacing:-.011em; }
+  .mono, code { font-family:'JetBrains Mono',ui-monospace,monospace; }
+  .mute { color:var(--mute); } .soft { color:var(--soft); } .small { font-size:12.5px; }
+  .break { word-break:break-all; }
+  .bad, .red { color:var(--red); } .ok, .green { color:var(--green); } .warn { color:var(--ochre); }
+
+  header { background:var(--card); border-bottom:1px solid var(--line); padding:22px 20px 0; position:sticky; top:0; z-index:5; }
+  .wrap { max-width:720px; margin:0 auto; }
+  h1 { font-size:24px; font-weight:600; letter-spacing:-.025em; margin:0; }
+  #sub { color:var(--soft); font-size:13.5px; margin:6px 0 16px; }
+  #tabs { display:flex; gap:4px; }
+  #tabs button { border:0; background:none; padding:10px 14px; border-radius:10px 10px 0 0; cursor:pointer;
+                 font:500 13.5px 'Instrument Sans'; color:var(--soft); position:relative; }
+  #tabs button.on { color:var(--blue); background:var(--surface); }
+  .badge { background:var(--red); color:#fff; border-radius:999px; font:500 10px/1.4 'JetBrains Mono';
+           padding:1px 5px; margin-left:6px; }
+
+  main { background:var(--surface); min-height:calc(100vh - 130px); padding:16px 20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; margin-bottom:10px; display:block; width:100%; }
+  .card.pad { padding:20px; }
+  .card.row { padding:16px; text-align:left; cursor:pointer; font:inherit; color:inherit; }
+  .card.row:hover { border-color:var(--mute); }
+  .card.broken { background:#FDF3F2; border-color:#EFC9C4; }
+  .rowhead { display:flex; align-items:center; gap:8px; }
+  .amountline { display:flex; align-items:baseline; gap:8px; margin-top:11px; }
+  .amount { font-size:27px; font-weight:500; letter-spacing:-.03em; }
+  .huge { font-size:46px; font-weight:500; letter-spacing:-.04em; margin:5px 0; }
+
+  .status { display:inline-flex; align-items:center; gap:8px; font-weight:500; font-size:12.5px; }
+  .status i { width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .status.ochre { color:var(--ochre); } .status.green { color:var(--green); }
+  .status.red { color:var(--red); } .status.mute { color:var(--mute); } .status.ink { color:var(--ink); }
+  .pill { display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:999px; font-weight:500; font-size:12.5px; }
+  .pill i { width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .pill.red { color:var(--red); background:rgba(206,63,46,.09); }
+  .pill.green { color:var(--green); background:rgba(27,122,90,.1); }
+
+  .cardhead { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .ring { width:78px; height:78px; flex:none; border-radius:50%; border:5px solid var(--fill);
+          display:grid; place-items:center; }
+  .ring span { font:500 16px 'JetBrains Mono'; color:var(--green); }
+
+  .panel { background:var(--surface); border-radius:16px; padding:16px; margin:14px 0; }
+  .panel p { margin:0 0 10px; } .panel p:last-child { margin:0; }
+  .block { margin:22px 0; }
+  .label { font-weight:500; font-size:12.5px; color:var(--mute); margin-bottom:10px; }
+  .labelrow { display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; }
+  .quote { font-size:15px; margin:0 0 8px; }
+  .injected { background:rgba(206,63,46,.09); color:#A8362A; border-radius:12px; padding:11px 13px;
+              font-size:13.5px; line-height:1.55; margin:10px 0; }
+
+  .envelope { position:relative; margin:14px 0 22px; }
+  .bar { display:flex; height:8px; border-radius:999px; overflow:hidden; background:var(--line); }
+  .marker { position:absolute; top:12px; transform:translateX(-50%); font:500 11px 'JetBrains Mono'; white-space:nowrap; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:20px; color:var(--soft); font-size:12.5px; }
+  .legend span { display:inline-flex; align-items:center; gap:7px; }
+  .legend i { width:7px; height:7px; border-radius:50%; }
+
+  .kv div { display:flex; gap:12px; align-items:baseline; margin-bottom:9px; }
+  .kv div:last-child { margin:0; }
+  .kv span { color:var(--mute); font:400 11.5px 'JetBrains Mono'; min-width:96px; }
+  .kv b { font:400 11.5px 'JetBrains Mono'; word-break:break-all; }
+
+  button { font:inherit; }
+  .primary, .deny, .danger, main button { border-radius:14px; cursor:pointer; }
+  main > .card button, .card button { margin-top:12px; }
+  .card.pad button { padding:14px 18px; border:1px solid var(--line); background:var(--card); font-weight:500; font-size:14px; }
+  .card.pad button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .card.pad button.danger { color:var(--red); border-color:#E6D2CF; }
+  .agentrow { display:flex; gap:10px; flex-wrap:wrap; }
+  .agentrow button { flex:1; min-width:170px; text-align:left; }
+  .agentrow b { display:block; font-size:15px; margin-bottom:3px; }
+  .agentrow span { color:var(--soft); font-weight:400; font-size:12.5px; }
+  .agentrow button.primary span { color:#c8ccd2; }
+
+  .actions { border-top:1px solid var(--line); margin-top:22px; padding-top:18px; }
+  .denybox { display:flex; gap:10px; flex-wrap:wrap; }
+  select { flex:1; min-width:200px; padding:14px; border-radius:14px; border:1px solid var(--line);
+           background:var(--card); font:400 14px 'Instrument Sans'; color:var(--ink); }
+  .deny { flex:none; padding:14px 22px; border:1px solid #E6D2CF; background:var(--card); color:var(--red); font-weight:500; }
+  .deny:hover { background:#FDF3F2; }
+  .noapprove { margin-top:14px; padding:14px 16px; border-radius:14px; background:var(--fill); color:var(--soft); font-size:12.5px; line-height:1.6; }
+  .noapprove b { color:var(--ink); display:block; margin-bottom:3px; }
+  .settled { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); color:var(--soft); font-size:12.5px; }
+
+  .verifyhead { font-size:26px; font-weight:400; letter-spacing:-.028em; margin:14px 0 10px; }
+  .verifyrows { border:1px solid var(--line); border-radius:16px; overflow:hidden; margin:20px 0; }
+  .vrow { display:flex; align-items:center; gap:12px; padding:12px 15px; border-bottom:1px solid var(--fill); font-size:13.5px; }
+  .vrow:last-child { border:0; }
+  .vrow b { margin-left:auto; font-weight:500; font-size:12.5px; }
+  .vrow.ok b { color:var(--green); } .vrow.bad { background:#FDF3F2; } .vrow.bad b { color:var(--red); }
+  .vrow.warn { background:#FCF7EC; } .vrow.warn b { color:var(--ochre); }
+
+  .back { border:0; background:none; color:var(--blue); padding:0 0 14px; cursor:pointer; font-size:13.5px; }
+  .divider { height:1px; background:var(--line); margin:22px 0 12px; }
+  .empty { text-align:center; padding:90px 30px; color:var(--soft); }
+  .empty h2 { color:var(--ink); font-size:19px; font-weight:500; margin:18px 0 8px; }
+  .blob { width:44px; height:44px; border-radius:14px; background:var(--fill); margin:0 auto; }
+  .locked { margin:0; padding-left:18px; color:var(--soft); font-size:13.5px; }
+  .locked li { margin-bottom:8px; }
+  code { background:var(--fill); padding:2px 5px; border-radius:5px; font-size:12px; color:var(--red); }
 </style>
 </head>
 <body>
-<main>
-  <h1>Warrant console</h1>
-  <p class="sub">Stands in for the agent and the operator. The phone is the other half.</p>
-
-  <div class="card">
-    <div class="label">The agent tries something</div>
-    <div class="row">
-      <button onclick="refund(12000,'P. Novak',false)">
-        <b>$120.00</b><span>inside the automatic limit — executes, nobody is paged</span>
-      </button>
-      <button class="primary" onclick="refund(240000,'Northwind',true)">
-        <b>$2,400.00</b><span>prompt-injected — pauses, lands on the phone</span>
-      </button>
-      <button onclick="refund(890000,'K. Mensah',false)">
-        <b>$8,900.00</b><span>above the hard stop — blocked outright</span>
-      </button>
-    </div>
-    <p class="note">Policy is deterministic: allow at or below $500, ask a human to $5,000, block above. No model is consulted.</p>
-  </div>
-
-  <div class="card">
-    <div class="label">Act three — edit the evidence</div>
-    <div class="row">
-      <button class="danger" onclick="tamper()">
-        <b>Alter a stored record</b><span>changes an amount in place, without re-signing it</span>
-      </button>
-      <button onclick="reset()">
-        <b>Reset</b><span>clears approvals and the ledger</span>
-      </button>
-    </div>
-    <p class="note">Then run <b>Verify</b> on the phone. Nothing here can make a refund happen after the fact — the worst a forger achieves is a ledger that announces it has been forged.</p>
-  </div>
-
-  <div class="card">
-    <div class="label">Ledger self-check <span id="verdict"></span></div>
-    <pre id="out">loading…</pre>
-    <p class="note">The server checking its own chain proves very little — that is the point of the phone doing it independently, against the published public key, with the network off.</p>
-  </div>
-</main>
-
-<script>
-const out = document.getElementById('out');
-const verdict = document.getElementById('verdict');
-
-async function post(path, body) {
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body ?? {})
-  });
-  return res.json();
-}
-
-async function refresh() {
-  const check = await (await fetch('/api/lab/selfcheck')).json();
-  verdict.innerHTML = check.ok
-    ? `<span class="pill ok"><span class="dot"></span>${check.count} records verify</span>`
-    : `<span class="pill bad"><span class="dot"></span>record ${check.index + 1} — ${check.reason}</span>`;
-  out.textContent = JSON.stringify(check, null, 2);
-}
-
-async function refund(amount_minor, recipient, injected) {
-  out.textContent = JSON.stringify(await post('/api/agent/refund', { amount_minor, recipient, injected }), null, 2);
-  setTimeout(refresh, 400);
-}
-
-async function tamper() {
-  const check = await (await fetch('/api/lab/selfcheck')).json();
-  const seq = check.ok ? check.count : 1;
-  out.textContent = JSON.stringify(await post('/api/lab/tamper', { seq, amount_minor: 24000000 }), null, 2);
-  setTimeout(refresh, 400);
-}
-
-async function reset() {
-  await post('/api/demo/reset');
-  refresh();
-}
-
-refresh();
-setInterval(refresh, 4000);
-</script>
+  <header><div class="wrap">
+    <h1 id="title">Approvals</h1>
+    <p id="sub"></p>
+    <nav id="tabs"></nav>
+  </div></header>
+  <main><div class="wrap" id="main"></div></main>
+  <script src="/app.js"></script>
 </body>
 </html>
