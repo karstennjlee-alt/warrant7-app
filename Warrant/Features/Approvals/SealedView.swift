@@ -60,7 +60,7 @@ struct SealedView: View {
             Circle().fill(tint).frame(width: 7, height: 7)
             Text(headline).warrantType(.label).foregroundStyle(tint)
             Spacer()
-            Text(approval.id.uppercased()).warrantType(.monoSmall).foregroundStyle(Ink.mute)
+            Text(approval.shortID).warrantType(.monoSmall).foregroundStyle(Ink.mute)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)

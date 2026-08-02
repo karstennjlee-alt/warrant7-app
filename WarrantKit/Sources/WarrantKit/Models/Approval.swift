@@ -123,6 +123,18 @@ public struct Approval: Sendable, Hashable, Codable, Identifiable {
         return "sha256:\(hex.prefix(4))…\(hex.suffix(4))"
     }
 
+    /// A short, readable handle for the request.
+    ///
+    /// §9.5 forbids showing a raw UUID to a person, and gateways differ: ours issues
+    /// `wrt_4471`, warrant7 issues a 36-character UUID that wraps onto two lines and tells
+    /// nobody anything. Short ids pass through; long ones are cut to a head that is still
+    /// enough to match against a console.
+    public var shortID: String {
+        let trimmed = id.replacingOccurrences(of: "wrt_", with: "")
+        guard trimmed.count > 12 else { return id.uppercased() }
+        return String(trimmed.prefix(8)).uppercased()
+    }
+
     /// The recipient, pulled off the action line for the places that need it alone.
     public var recipient: String {
         actionLine.components(separatedBy: " to ").last ?? actionLine

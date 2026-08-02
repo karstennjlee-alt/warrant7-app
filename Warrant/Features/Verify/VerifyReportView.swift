@@ -154,7 +154,7 @@ struct VerifyReportView: View {
 
     private func background(for code: VerificationCode) -> Color {
         if code.isOK { return Ink.card }
-        if case .untrusted = code { return Color(hex: 0xFCF7EC) }
-        return Color(hex: 0xFDF3F2)
+        if case .untrusted = code { return Ink.warnFill }
+        return Ink.brokenFill
     }
 }

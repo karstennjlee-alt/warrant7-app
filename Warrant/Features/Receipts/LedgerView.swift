@@ -85,7 +85,7 @@ struct LedgerView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(alignment: .top, spacing: 10) {
-                    Circle().fill(Color(hex: 0x6E1E18)).frame(width: 6, height: 6).padding(.top, 6)
+                    Circle().fill(Ink.broken).frame(width: 6, height: 6).padding(.top, 6)
                     Text("A failed check is **broken evidence**. That record proves nothing, and neither does anything after it.")
                         .warrantType(.bodySmall)
                         .foregroundStyle(Ink.soft)
@@ -112,15 +112,15 @@ private struct LedgerRow: View {
     }
 
     private var eventColor: Color {
-        if isBroken { return Color(hex: 0x6E1E18) }
+        if isBroken { return Ink.broken }
         return record.isNegativeOutcome ? Ink.red : Ink.ink
     }
 
     var body: some View {
         Card(
             radius: Metric.rowRadius,
-            border: isBroken ? Color(hex: 0xEFC9C4) : Ink.line,
-            background: isBroken ? Color(hex: 0xFDF3F2) : (isHighlighted ? Ink.blue.opacity(0.05) : Ink.card)
+            border: isBroken ? Ink.brokenLine : Ink.line,
+            background: isBroken ? Ink.brokenFill : (isHighlighted ? Ink.blue.opacity(0.05) : Ink.card)
         ) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 9) {
@@ -160,6 +160,6 @@ private struct LedgerRow: View {
     private func verdictColor(_ code: VerificationCode) -> Color {
         if code.isOK { return Ink.green }
         if case .untrusted = code { return Ink.ochre }
-        return Color(hex: 0x6E1E18)
+        return Ink.broken
     }
 }

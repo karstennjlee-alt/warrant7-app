@@ -210,7 +210,7 @@ public actor DemoDataSource: WarrantDataSource {
     }
 
     public func receipts(since: Date?) async throws -> [ReceiptRecord] {
-        records.compactMap(ReceiptRecord.init(raw:))
+        records.compactMap { ReceiptRecord(raw: $0) }
     }
 
     public func exportBundle() async throws -> EvidenceBundle {

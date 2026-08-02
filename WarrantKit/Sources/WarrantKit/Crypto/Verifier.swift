@@ -104,13 +104,21 @@ public struct ChainVerifier: Sendable {
         self.format = format
     }
 
+    /// Verifies a bundle in whatever dialect it declares, rather than only in this app's.
     public func verify(bundle: EvidenceBundle) -> VerificationReport {
+        // A bundle that names its own format gets checked on its own terms. Insisting on our
+        // conventions would report someone else's perfectly good evidence as forged.
+        let resolved = self.format == .default ? ChainFormat.detected(from: bundle) : self.format
+        if resolved != self.format {
+            return ChainVerifier(format: resolved).verify(bundle: bundle)
+        }
+
         guard let keyData = Data(base64Encoded: bundle.publicKeyBase64),
               let key = try? Curve25519.Signing.PublicKey(rawRepresentation: keyData) else {
             let records = bundle.records.enumerated().map { index, raw in
                 RecordReport(
-                    sequence: raw["seq"]?.numberValue.map { Int($0) } ?? index + 1,
-                    event: raw["event"]?.stringValue ?? "—",
+                    sequence: raw[format.fields.sequence]?.numberValue.map { Int($0) } ?? index + 1,
+                    event: raw[format.fields.event]?.stringValue ?? "—",
                     code: .malformed("public key")
                 )
             }
@@ -123,14 +131,14 @@ public struct ChainVerifier: Sendable {
         // Structural pass. A record that will not parse cannot be checked at all.
         var parsed: [ReceiptRecord] = []
         for (index, raw) in rawRecords.enumerated() {
-            guard let record = ReceiptRecord(raw: raw) else {
-                let sequence = raw["seq"]?.numberValue.map { Int($0) } ?? index + 1
+            guard let record = ReceiptRecord(raw: raw, format: format) else {
+                let sequence = raw[format.fields.sequence]?.numberValue.map { Int($0) } ?? index + 1
                 var reports = parsed.map { RecordReport(sequence: $0.sequence, event: $0.event, code: .ok) }
-                reports.append(RecordReport(sequence: sequence, event: raw["event"]?.stringValue ?? "—", code: .malformed("envelope")))
+                reports.append(RecordReport(sequence: sequence, event: raw[format.fields.event]?.stringValue ?? "—", code: .malformed("envelope")))
                 for later in rawRecords.dropFirst(index + 1) {
                     reports.append(RecordReport(
-                        sequence: later["seq"]?.numberValue.map { Int($0) } ?? 0,
-                        event: later["event"]?.stringValue ?? "—",
+                        sequence: later[format.fields.sequence]?.numberValue.map { Int($0) } ?? 0,
+                        event: later[format.fields.event]?.stringValue ?? "—",
                         code: .untrusted(dependsOn: sequence)
                     ))
                 }
@@ -206,14 +214,21 @@ public struct ChainVerifier: Sendable {
         // Signature is checked against the recomputation, never against the stored hash.
         // Checking it against a value the bundle supplied would be trusting the bundle to
         // report on itself, which is the thing this whole screen exists not to do.
-        let signedBytes: Data
-        switch format.signaturePayload {
-        case .digestBytes: signedBytes = recomputed.bytes
-        case .canonicalBody: signedBytes = canonical
+        guard publicKey.isValidSignature(signature, for: signedBytes(for: recomputed, canonical: canonical)) else {
+            return .signatureInvalid
         }
-        guard publicKey.isValidSignature(signature, for: signedBytes) else { return .signatureInvalid }
         guard recomputed == storedHash else { return .hashMismatch }
         return .ok
+    }
+
+    /// Signing the 32 digest bytes and signing their 64 hex characters are different messages,
+    /// and nothing about a failure tells you which one the other side meant.
+    private func signedBytes(for digest: Digest256, canonical: Data) -> Data {
+        switch format.signaturePayload {
+        case .digestBytes: digest.bytes
+        case .digestHexUTF8: Data(digest.hex.utf8)
+        case .canonicalBody: canonical
+        }
     }
 
     // MARK: - Sequence and linkage
@@ -247,12 +262,7 @@ public struct ChainVerifier: Sendable {
                   let signature = Data(base64Encoded: record.signature),
                   let canonical = try? CanonicalJSON.canonicalBytes(record.body) else { return false }
             let recomputed = Digest256.chained(previous: previous, canonical: canonical, linkage: format.linkage)
-            let signedBytes: Data
-            switch format.signaturePayload {
-            case .digestBytes: signedBytes = recomputed.bytes
-            case .canonicalBody: signedBytes = canonical
-            }
-            return !publicKey.isValidSignature(signature, for: signedBytes)
+            return !publicKey.isValidSignature(signature, for: signedBytes(for: recomputed, canonical: canonical))
         }
     }
 

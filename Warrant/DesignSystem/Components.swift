@@ -49,19 +49,22 @@ public struct Panel<Content: View>: View {
     }
 }
 
-/// The brand mark: a rounded square, tinted by meaning. Drawn, not an SF Symbol.
+/// The brand mark: the winged shield, drawn straight onto whatever is behind it.
+///
+/// No plate, no fill — the artwork's own transparency carries it. Its green measures around
+/// 1.4:1 against the paper surfaces, so it reads as a shape rather than as anything you could
+/// put text next to; size it generously and it holds.
 public struct BrandMark: View {
-    var color: Color = Ink.ink
-    var size: CGFloat = 16
+    var size: CGFloat = 34
 
-    public init(color: Color = Ink.ink, size: CGFloat = 16) {
-        self.color = color
+    public init(size: CGFloat = 34) {
         self.size = size
     }
 
     public var body: some View {
-        RoundedRectangle(cornerRadius: size * 0.3125, style: .continuous)
-            .fill(color)
+        Image("Logo")
+            .resizable()
+            .scaledToFit()
             .frame(width: size, height: size)
             .accessibilityHidden(true)
     }
@@ -298,7 +301,7 @@ public struct SlideToApprove: View {
                     .overlay(
                         Text("→")
                             .warrantType(.title)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Ink.onSolid)
                     )
                     .offset(x: offset + 5)
                     .gesture(drag)
@@ -347,9 +350,9 @@ public struct SlideToApprove: View {
 
 public struct SolidButtonStyle: ButtonStyle {
     var color: Color = Ink.ink
-    var foreground: Color = .white
+    var foreground: Color = Ink.onSolid
 
-    public init(color: Color = Ink.ink, foreground: Color = .white) {
+    public init(color: Color = Ink.ink, foreground: Color = Ink.onSolid) {
         self.color = color
         self.foreground = foreground
     }
@@ -406,9 +409,12 @@ public struct ScreenHeader<Trailing: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline) {
-                Text(title)
-                    .warrantType(.screenTitle)
-                    .foregroundStyle(Ink.ink)
+                HStack(spacing: 9) {
+                    BrandMark(size: 34)
+                    Text(title)
+                        .warrantType(.screenTitle)
+                        .foregroundStyle(Ink.ink)
+                }
                 Spacer()
                 trailing()
             }

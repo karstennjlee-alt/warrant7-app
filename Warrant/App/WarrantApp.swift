@@ -7,12 +7,14 @@ struct WarrantApp: App {
     @State private var state = AppState()
     @Environment(\.scenePhase) private var scenePhase
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var delegate
+    @AppStorage("appearance") private var appearance: Appearance = .system
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environment(state)
                 .tint(Ink.blue)
+                .preferredColorScheme(appearance.colorScheme)
                 .task {
                     delegate.state = state
                     await state.start()

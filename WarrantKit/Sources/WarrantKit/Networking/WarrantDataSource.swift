@@ -71,7 +71,7 @@ public struct LiveDataSource: WarrantDataSource {
         let data = try await client.send(.receipts(since: since))
         cache.write(data, for: .receipts)
         guard case .array(let raw)? = try? JSONValue.parse(data) else { return [] }
-        return raw.compactMap(ReceiptRecord.init(raw:))
+        return raw.compactMap { ReceiptRecord(raw: $0) }
     }
 
     public func exportBundle() async throws -> EvidenceBundle {

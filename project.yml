@@ -59,9 +59,11 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
 
-        # §8: light appearance only. The paper metaphor requires paper; a half-hearted
-        # dark mode would read worse than none. Do not "fix" this.
-        UIUserInterfaceStyle: Light
+        # §8 used to pin this to Light, because the paper metaphor requires paper and a
+        # half-hearted dark mode reads worse than none. The objection was to a half-hearted
+        # one: `Ink` now carries a full second scheme, measured by `ContrastTests` on the
+        # same floors, so the pin is gone and Settings → Appearance chooses. Do not pin it
+        # again without taking the dark scheme out too — a pin alone would strand it.
 
         # §3: non-secret configuration, surfaced from Config.xcconfig. The Supabase anon
         # key is publishable by design and is protected by Row Level Security — it is not
@@ -138,7 +140,6 @@ targets:
       path: WarrantWidgets/Info.plist
       properties:
         CFBundleDisplayName: Warrant
-        UIUserInterfaceStyle: Light
         WarrantAPIBaseURL: $(API_BASE_URL)
         UIAppFonts:
           - ArchivoExpanded-SemiBold.ttf
