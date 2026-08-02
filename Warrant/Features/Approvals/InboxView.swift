@@ -100,9 +100,10 @@ struct InboxView: View {
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Ink.fill)
-                .frame(width: 44, height: 44)
+                .frame(width: 72, height: 72)
+                .overlay { BrandMark(size: 48) }
             Text("Nothing needs you")
                 .warrantType(.title)
                 .foregroundStyle(Ink.ink)
@@ -122,12 +123,12 @@ private struct PendingRow: View {
     let approval: Approval
 
     var body: some View {
-        Card(border: Color(hex: 0xD8DCE0)) {
+        Card(border: Ink.lineStrong) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 8) {
                     StatusLabel(text: "Needs you", color: Ink.ochre)
                     Spacer()
-                    Text(approval.id.uppercased())
+                    Text(approval.shortID)
                         .warrantType(.monoSmall)
                         .foregroundStyle(Ink.mute)
                 }
@@ -186,7 +187,7 @@ private struct SettledRow: View {
                 HStack(spacing: 8) {
                     StatusLabel(text: approval.status.label.capitalized, color: tint)
                     Spacer()
-                    Text(approval.id.uppercased())
+                    Text(approval.shortID)
                         .warrantType(.monoSmall)
                         .foregroundStyle(Ink.mute)
                 }

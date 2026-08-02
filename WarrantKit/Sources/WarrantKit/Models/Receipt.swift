@@ -29,35 +29,47 @@ public struct ReceiptRecord: Sendable, Hashable, Identifiable {
     /// Members that are envelope rather than content. Everything else is hashed.
     public static let envelopeKeys: Set<String> = ["hash", "signature"]
 
-    public init?(raw: JSONValue) {
+    public init?(raw: JSONValue, format: ChainFormat = .default) {
+        let fields = format.fields
         guard case .object = raw,
-              let sequence = raw["seq"]?.numberValue.map({ Int($0) }),
-              let event = raw["event"]?.stringValue,
-              let previousHash = raw["prev"]?.stringValue,
-              let hash = raw["hash"]?.stringValue,
-              let signature = raw["signature"]?.stringValue
+              let sequence = raw[fields.sequence]?.numberValue.map({ Int($0) }),
+              let event = raw[fields.event]?.stringValue,
+              let previousHash = raw[fields.previousHash]?.stringValue,
+              let hash = raw[fields.hash]?.stringValue,
+              let signature = raw[fields.signature]?.stringValue
         else { return nil }
 
         self.sequence = sequence
         self.event = event
-        self.actor = raw["actor"]?.stringValue ?? "—"
-        self.resource = raw["resource"]?.stringValue ?? "—"
+        // A nested `payload` is where warrant7 keeps the interesting members; look there too
+        // rather than reporting "—" for a record that plainly says who did what.
+        let payload = raw["payload"]
+        self.actor = raw[fields.actor]?.stringValue
+            ?? payload?["agent_name"]?.stringValue
+            ?? payload?["agent"]?.stringValue
+            ?? payload?["actor"]?.stringValue
+            ?? "—"
+        self.resource = raw[fields.resource]?.stringValue
+            ?? payload?["resource_id"]?.stringValue
+            ?? payload?["action"]?.stringValue
+            ?? "—"
         self.previousHash = previousHash
         self.hash = hash
         self.signature = signature
         self.raw = raw
-        self.body = raw.removingKeys(Self.envelopeKeys)
+        self.body = raw.removingKeys(format.envelopeKeys)
 
-        if let minor = raw["amount_minor"]?.numberValue {
+        if let minor = (raw[fields.amountMinor] ?? payload?[fields.amountMinor])?.numberValue {
             self.amount = Money(
                 minorUnits: Int(minor),
-                currencyCode: raw["currency"]?.stringValue ?? "USD"
+                currencyCode: (raw[fields.currency] ?? payload?[fields.currency])?.stringValue ?? "USD"
             )
         } else {
             self.amount = nil
         }
 
-        if let ts = raw["ts"]?.stringValue, let parsed = WarrantJSON.date(from: ts) {
+        if let ts = (raw[fields.timestamp] ?? payload?[fields.timestamp])?.stringValue,
+           let parsed = WarrantJSON.date(from: ts) {
             self.timestamp = parsed
         } else {
             self.timestamp = Date(timeIntervalSince1970: 0)
@@ -81,15 +93,33 @@ public struct ReceiptRecord: Sendable, Hashable, Identifiable {
 public struct EvidenceBundle: Sendable, Hashable {
     public let organization: String
     public let exportedAt: Date?
-    /// Base64 Ed25519 public key, 32 raw bytes.
+    /// Base64 Ed25519 public key, 32 raw bytes. A hex key in the source is normalised here, so
+    /// everything downstream sees one encoding.
     public let publicKeyBase64: String
     public let records: [JSONValue]
+    /// The bundle's own declaration of which dialect it speaks, when it makes one.
+    public let format: String?
 
-    public init(organization: String, exportedAt: Date?, publicKeyBase64: String, records: [JSONValue]) {
+    public init(
+        organization: String,
+        exportedAt: Date?,
+        publicKeyBase64: String,
+        records: [JSONValue],
+        format: String? = nil
+    ) {
         self.organization = organization
         self.exportedAt = exportedAt
         self.publicKeyBase64 = publicKeyBase64
         self.records = records
+        self.format = format
+    }
+
+    /// 64 hex characters or 44 base64 — both describe the same 32 bytes, and a bundle is
+    /// entitled to write it either way.
+    static func normalisedKey(_ raw: String) -> String? {
+        if let data = Data(hexEncoded: raw), data.count == 32 { return data.base64EncodedString() }
+        if let data = Data(base64Encoded: raw), data.count == 32 { return raw }
+        return nil
     }
 
     public enum ImportFailure: Error, Equatable, Sendable {
@@ -113,20 +143,33 @@ public struct EvidenceBundle: Sendable, Hashable {
         guard case .array(let records)? = root["records"] ?? root["receipts"], !records.isEmpty else {
             throw ImportFailure.missingRecords
         }
-        guard let key = root["public_key"]?.stringValue ?? root["publicKey"]?.stringValue else {
+        guard let rawKey = root["public_key"]?.stringValue ?? root["publicKey"]?.stringValue,
+              let key = normalisedKey(rawKey) else {
             throw ImportFailure.missingPublicKey
         }
 
+        // `organization` may be a name or an object carrying one.
+        let organization = root["organization"]?.stringValue
+            ?? root["organization"]?["name"]?.stringValue
+            ?? root["org"]?.stringValue
+            ?? "—"
+
         return EvidenceBundle(
-            organization: root["org"]?.stringValue ?? root["organization"]?.stringValue ?? "—",
+            organization: organization,
             exportedAt: root["exported_at"]?.stringValue.flatMap(WarrantJSON.date(from:)),
             publicKeyBase64: key,
-            records: records
+            records: records,
+            format: root["format"]?.stringValue
         )
     }
 
+    public func parsedRecords(format: ChainFormat? = nil) -> [ReceiptRecord] {
+        let resolved = format ?? ChainFormat.detected(from: self)
+        return records.compactMap { ReceiptRecord(raw: $0, format: resolved) }
+    }
+
     public var parsedRecords: [ReceiptRecord] {
-        records.compactMap(ReceiptRecord.init(raw:))
+        parsedRecords(format: nil)
     }
 }
 

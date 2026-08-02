@@ -14,6 +14,24 @@ public final class SupabaseService: Sendable {
 
     // MARK: - Auth
 
+    /// Email and password.
+    ///
+    /// Preferred over the magic link on a phone, and not merely as a convenience: the link
+    /// needs SMTP configured and a redirect allowlist that points at something the handset can
+    /// open. Until both are set, a magic link is a sign-in that silently never arrives, and a
+    /// password is a sign-in that works.
+    @discardableResult
+    public func signIn(email: String, password: String) async throws -> String {
+        let session = try await client.auth.signIn(email: email, password: password)
+        try persist(accessToken: session.accessToken)
+        try? keychain.setString(email, for: KeychainStore.Account.signedInEmail)
+        return session.accessToken
+    }
+
+    public var storedEmail: String? {
+        try? keychain.string(for: KeychainStore.Account.signedInEmail)
+    }
+
     /// Magic link. The redirect comes back as `warrant://auth-callback`.
     public func sendMagicLink(to email: String) async throws {
         try await client.auth.signInWithOTP(
@@ -36,6 +54,7 @@ public final class SupabaseService: Sendable {
         try? await client.auth.signOut()
         try? keychain.removeItem(for: KeychainStore.Account.sessionToken)
         try? keychain.removeItem(for: KeychainStore.Account.refreshToken)
+        try? keychain.removeItem(for: KeychainStore.Account.signedInEmail)
     }
 
     /// Mirrored into the Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`, so

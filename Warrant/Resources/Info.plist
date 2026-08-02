@@ -69,8 +69,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>WarrantAPIBaseURL</key>
 	<string>$(API_BASE_URL)</string>
 	<key>WarrantDevToken</key>

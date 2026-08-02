@@ -27,6 +27,9 @@ public enum WarrantError: Error, Sendable, Hashable {
     /// Local guard: the countdown reached zero before the tap landed. No request was sent.
     case locallyExpired
 
+    /// Wrong email or password. Deliberately does not say which — that distinction is a gift
+    /// to someone guessing, and no help at all to someone who mistyped.
+    case signInFailed
     case biometricsFailed
     case biometricsUnavailable
 
@@ -58,6 +61,8 @@ public enum WarrantError: Error, Sendable, Hashable {
             "No gateway is configured yet, so \(Brand.name) is running on demo data."
         case .locallyExpired:
             "This request expired while you were reading it. Nothing was sent."
+        case .signInFailed:
+            "That email and password don't match an account."
         case .biometricsFailed:
             "Not approved — \(Brand.name) couldn't confirm it was you."
         case .biometricsUnavailable:

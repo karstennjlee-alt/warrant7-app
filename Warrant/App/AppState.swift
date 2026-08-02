@@ -45,6 +45,18 @@ public final class AppState {
     private var syncTask: Task<Void, Never>?
     private var realtimeTask: Task<Void, Never>?
     private let supabase: SupabaseService?
+    private let client: APIClient?
+
+    /// warrant7 names almost everything differently and wraps its collections, so it gets its
+    /// own translation rather than the app's model being bent to one server's vocabulary.
+    static func liveSource(
+        baseURL: URL, client: APIClient, cache: OfflineCache, email: String
+    ) -> any WarrantDataSource {
+        if baseURL.host()?.contains("warrant7") == true {
+            return Warrant7DataSource(client: client, cache: cache, email: email)
+        }
+        return LiveDataSource(client: client, cache: cache)
+    }
 
     public enum Tab: Hashable { case inbox, receipts, verify, policy, lab }
 
@@ -73,12 +85,14 @@ public final class AppState {
                 provider = UnconfiguredSessionProvider()
             }
             let client = APIClient(baseURL: apiBaseURL, sessionProvider: provider)
-            source = LiveDataSource(client: client, cache: cache)
+            self.client = client
+            source = Self.liveSource(baseURL: apiBaseURL, client: client, cache: cache, email: service?.storedEmail ?? "")
             isDemoMode = false
         } else {
             // Not a stub around a missing base URL — the specified demo path, whose outcomes
             // are real local state and whose signatures really verify (§9.2).
             supabase = nil
+            self.client = nil
             source = DemoDataSource()
             isDemoMode = true
         }
@@ -97,6 +111,7 @@ public final class AppState {
             isSignedIn = true
         } else if let supabase {
             isSignedIn = await supabase.currentSession()
+            if isSignedIn, let email = supabase.storedEmail { rebuildSource(email: email) }
         }
         guard isSignedIn else { return }
 
@@ -154,12 +169,16 @@ public final class AppState {
     // MARK: - Loading
 
     public func loadEverything() async {
-        async let me: Void = loadMe()
+        // Identity first, and not merely for tidiness. Some gateways gate every read on a
+        // membership row that this call creates, so firing the others concurrently means they
+        // race it and lose — and a 403 renders as "offline", which is a lie about the network.
+        await loadMe()
+
         async let approvals: Void = refreshApprovals()
         async let policy: Void = loadPolicy()
         async let activity: Void = loadActivity()
         async let receipts: Void = loadReceipts()
-        _ = await (me, approvals, policy, activity, receipts)
+        _ = await (approvals, policy, activity, receipts)
     }
 
     public func loadMe() async {
@@ -175,6 +194,11 @@ public final class AppState {
             isOffline = false
             lastSyncedAt = Date()
         } catch {
+            // The strip only ever says OFFLINE, because a person cannot act on a status code.
+            // A developer can, so the reason goes to the console in Debug builds.
+            #if DEBUG
+            NSLog("[Warrant] approvals fetch failed: " + String(describing: error))
+            #endif
             isOffline = true
             approvals = cache.load([Approval].self, for: .approvals) ?? approvals
             lastSyncedAt = cache.lastSyncedAt
@@ -224,6 +248,23 @@ public final class AppState {
     public func signIn(email: String) async throws {
         guard let supabase else { throw WarrantError.notConfigured }
         try await supabase.sendMagicLink(to: email)
+    }
+
+    /// Email and password, which is the path that actually works on a handset today.
+    public func signIn(email: String, password: String) async throws {
+        guard let supabase else { throw WarrantError.notConfigured }
+        try await supabase.signIn(email: email, password: password)
+        rebuildSource(email: email)
+        isSignedIn = true
+        await loadEverything()
+        startSync()
+    }
+
+    /// The data source carries the signed-in identity, so it is rebuilt once that is known.
+    private func rebuildSource(email: String) {
+        guard let apiBaseURL = configuration.apiBaseURL, let client else { return }
+        dataSource = Self.liveSource(baseURL: apiBaseURL, client: client, cache: cache, email: email)
+        coordinator = DecisionCoordinator(source: dataSource)
     }
 
     public func handle(url: URL) async {

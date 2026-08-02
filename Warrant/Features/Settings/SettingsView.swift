@@ -9,12 +9,14 @@ struct SettingsView: View {
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showKeyQR = false
     @State private var copied = false
+    @AppStorage("appearance") private var appearance: Appearance = .system
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
                 organization
                 publicKey
+                appearanceCard
                 notifications
                 if state.isDemoMode || state.organization?.isDemo == true { demo }
                 NavigationLink { AboutView() } label: {
@@ -36,7 +38,7 @@ struct SettingsView: View {
                 .buttonStyle(.plain)
 
                 Button("Sign out") { Task { await state.signOut() } }
-                    .buttonStyle(OutlineButtonStyle(color: Ink.red, border: Color(hex: 0xE6D2CF)))
+                    .buttonStyle(OutlineButtonStyle(color: Ink.red, border: Ink.brokenLine))
                     .padding(.top, 6)
             }
             .padding(14)
@@ -104,6 +106,26 @@ struct SettingsView: View {
                         .foregroundStyle(Ink.soft)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var appearanceCard: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Appearance").fieldLabel()
+                Picker("Appearance", selection: $appearance) {
+                    ForEach(Appearance.allCases) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                Text("Both schemes carry the same four meanings and clear the same contrast floor. System follows the phone.")
+                    .warrantType(.bodySmall)
+                    .foregroundStyle(Ink.soft)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -224,6 +246,11 @@ struct AboutView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 12) {
+                    BrandMark(size: 72)
+                    Text(Brand.name).warrantType(.headline).foregroundStyle(Ink.ink)
+                }
+
                 Text(Brand.tagline)
                     .warrantType(.headline)
                     .foregroundStyle(Ink.ink)

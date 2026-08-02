@@ -5,9 +5,13 @@ struct SignInView: View {
     @Environment(AppState.self) private var state
 
     @State private var email = ""
+    @State private var password = ""
     @State private var sent = false
     @State private var failure: WarrantError?
     @State private var isSending = false
+    /// Password by default. The magic link needs SMTP and a redirect allowlist pointing at
+    /// something this handset can open; until both are set it is a sign-in that never arrives.
+    @State private var useMagicLink = false
 
     var body: some View {
         ZStack {
@@ -17,8 +21,8 @@ struct SignInView: View {
                 Spacer(minLength: 30)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 9) {
-                        BrandMark()
+                    HStack(spacing: 10) {
+                        BrandMark(size: 52)
                         Text(Brand.name).warrantType(.label).foregroundStyle(Ink.ink)
                     }
                     Text("Approve or deny what your agents are about to do")
@@ -63,23 +67,33 @@ struct SignInView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } else {
-                TextField("you@company.com", text: $email)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .warrantType(.body)
-                    .padding(16)
-                    .background(Ink.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: Metric.buttonRadius, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Metric.buttonRadius, style: .continuous)
-                            .stroke(Ink.line, lineWidth: Metric.hairline)
-                    )
+                field {
+                    TextField("you@company.com", text: $email)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                }
 
-                Button(isSending ? "Sending…" : "Send a sign-in link") { send() }
+                if !useMagicLink {
+                    field {
+                        SecureField("Password", text: $password)
+                            .textContentType(.password)
+                    }
+                }
+
+                Button(buttonTitle) { submit() }
                     .buttonStyle(SolidButtonStyle())
-                    .disabled(email.isEmpty || isSending)
+                    .disabled(email.isEmpty || (!useMagicLink && password.isEmpty) || isSending)
+
+                Button(useMagicLink ? "Use a password instead" : "Email me a link instead") {
+                    useMagicLink.toggle()
+                    failure = nil
+                }
+                .buttonStyle(.plain)
+                .warrantType(.bodySmall)
+                .foregroundStyle(Ink.blue)
+                .padding(.top, 2)
             }
 
             if let failure {
@@ -109,17 +123,40 @@ struct SignInView: View {
         }
     }
 
-    private func send() {
+    private var buttonTitle: String {
+        if isSending { return useMagicLink ? "Sending…" : "Signing in…" }
+        return useMagicLink ? "Send a sign-in link" : "Sign in"
+    }
+
+    @ViewBuilder
+    private func field<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .warrantType(.body)
+            .padding(16)
+            .background(Ink.surface)
+            .clipShape(RoundedRectangle(cornerRadius: Metric.buttonRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Metric.buttonRadius, style: .continuous)
+                    .stroke(Ink.line, lineWidth: Metric.hairline)
+            )
+    }
+
+    private func submit() {
         isSending = true
         failure = nil
         Task {
             do {
-                try await state.signIn(email: email)
-                sent = true
+                if useMagicLink {
+                    try await state.signIn(email: email)
+                    sent = true
+                } else {
+                    try await state.signIn(email: email, password: password)
+                }
             } catch let error as WarrantError {
                 failure = error
             } catch {
-                failure = .server
+                // Supabase says "Invalid login credentials"; the person needs the plain version.
+                failure = .signInFailed
             }
             isSending = false
         }

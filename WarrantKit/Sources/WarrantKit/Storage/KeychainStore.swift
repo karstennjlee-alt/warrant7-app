@@ -91,5 +91,6 @@ public extension KeychainStore {
         public static let sessionToken = "session-token"
         public static let refreshToken = "refresh-token"
         public static let orgPublicKey = "org-public-key"
+        public static let signedInEmail = "signed-in-email"
     }
 }

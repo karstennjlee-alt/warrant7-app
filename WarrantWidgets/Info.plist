@@ -35,8 +35,6 @@
 		<string>JetBrainsMono-Regular.ttf</string>
 		<string>JetBrainsMono-Medium.ttf</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>WarrantAPIBaseURL</key>
 	<string>$(API_BASE_URL)</string>
 </dict>

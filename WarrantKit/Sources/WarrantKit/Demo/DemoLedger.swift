@@ -32,6 +32,7 @@ public struct DemoLedger: Sendable {
         let signedBytes: Data
         switch format.signaturePayload {
         case .digestBytes: signedBytes = digest.bytes
+        case .digestHexUTF8: signedBytes = Data(digest.hex.utf8)
         case .canonicalBody: signedBytes = canonical
         }
         let signature = try signingKey.signature(for: signedBytes)

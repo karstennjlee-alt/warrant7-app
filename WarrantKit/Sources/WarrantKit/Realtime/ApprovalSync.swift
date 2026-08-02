@@ -74,6 +74,9 @@ public actor ApprovalSync {
             cache.markSynced()
             broadcast(Snapshot(approvals: approvals, isOffline: false, syncedAt: cache.lastSyncedAt))
         } catch {
+            #if DEBUG
+            NSLog("[Warrant] sync failed: " + String(describing: error))
+            #endif
             // Fail closed and say so. An empty inbox and an unreachable gateway look identical
             // on screen unless we insist otherwise, and one of them means "do not tap".
             let cached = cache.load([Approval].self, for: .approvals) ?? []

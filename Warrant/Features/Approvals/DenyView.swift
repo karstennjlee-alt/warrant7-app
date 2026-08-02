@@ -150,7 +150,7 @@ private struct RadioMark: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(selected ? Ink.red : Color(hex: 0xD6DAD5), lineWidth: 1.5)
+                .stroke(selected ? Ink.red : Ink.lineStrong, lineWidth: 1.5)
             if selected {
                 Circle().fill(Ink.red).padding(4)
             }

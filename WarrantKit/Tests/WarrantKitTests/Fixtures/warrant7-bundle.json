@@ -1,0 +1,741 @@
+{
+  "format": "warrant7.evidence.v1",
+  "organization": {
+    "name": "Warrant7 Demo",
+    "slug": "warrant7-demo"
+  },
+  "key_id": "ed25519:8ab9931e34d6d8d6958bab9cb1f7922a",
+  "public_key": "65ccb70885894da779786b1518cd8d41e2dc8f3bb1a47e80dc1073288ea51dce",
+  "algorithm": "Ed25519",
+  "canonicalization": "RFC8785",
+  "hash": "sha256(previous_hash || canonical(envelope))",
+  "signature_input": "utf8(record_hash_hex)",
+  "exported_at": "2026-08-02T20:41:56.547Z",
+  "records": [
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 1,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_5f2b",
+        "method": "bearer_token_sha256",
+        "agent_name": "Support Agent 01"
+      },
+      "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "record_hash": "e539ee0a073a68d7830ec45180120dde597216c8722c52c72833ae722129f268",
+      "signature": "7klNhaRGkdfOZYlT2OfNE+8hZXhVy/J+KN5IYLmSTz76Y5o3cM0JG3905BVha9J01MtrODLYu5Ob+tx3MgkGCA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 2,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "129d29f7b3dd3aa3f0fdd538abe45a85989f46c84d0151a9c9a3bcfdc0235fe7",
+        "reason": "Wrong size delivered",
+        "agent_id": "wrt_agent_5f2b",
+        "currency": "USD",
+        "recipient": "Acme Industries",
+        "expires_at": "2026-08-02T19:49:37.125Z",
+        "request_id": "007e9654-b6d5-405f-b4b7-aaa3905ceefa",
+        "resource_id": "payment_122",
+        "amount_minor": 12000,
+        "requested_at": "2026-08-02T19:47:37.125Z",
+        "idempotency_key": "live-a1"
+      },
+      "previous_hash": "e539ee0a073a68d7830ec45180120dde597216c8722c52c72833ae722129f268",
+      "record_hash": "449e20cc69b65022e9f6d7b455ff78dd33a8613b3ef523eac6a489c7aed644a1",
+      "signature": "8JJ9uBlMAtAwYip2NACslsnpDfycX8FvnjCmV8qiN0BEczD5FbwCXLpNn1CqX8nBm4SMZRELi3YzdaagWdqMCw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 3,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "ALLOW",
+        "evaluator": "policy@deterministic",
+        "request_id": "007e9654-b6d5-405f-b4b7-aaa3905ceefa",
+        "reason_code": "WITHIN_AUTOMATIC_LIMIT",
+        "amount_minor": 12000,
+        "policy_version": 1
+      },
+      "previous_hash": "449e20cc69b65022e9f6d7b455ff78dd33a8613b3ef523eac6a489c7aed644a1",
+      "record_hash": "f7535158ca64da5bda3586e206a980c26b948e40a7b0601a63351706d881921f",
+      "signature": "N9L0a4uCjAihszVoTaBwV7YEKpv50VM7n+bx4aO4pQ7CEhFN3usdmyHwuDp1q7TorSEuJq7VdDj5r/FBD+oPAA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 4,
+      "event_type": "execution.started",
+      "payload": {
+        "digest": "129d29f7b3dd3aa3f0fdd538abe45a85989f46c84d0151a9c9a3bcfdc0235fe7",
+        "request_id": "007e9654-b6d5-405f-b4b7-aaa3905ceefa"
+      },
+      "previous_hash": "f7535158ca64da5bda3586e206a980c26b948e40a7b0601a63351706d881921f",
+      "record_hash": "70240255bdff33b9b371f1bf55ab187126a7b8095c2dba2d457fb011802331dc",
+      "signature": "Bf6anqyF+ZQA98z4TDZsrfnEIaxp2SxOEYPW9BI3mkDcZ/fT1VvrsMFtgL6W+ytzien1ywsvBib9v8Ue/1W+BQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 5,
+      "event_type": "execution.succeeded",
+      "payload": {
+        "request_id": "007e9654-b6d5-405f-b4b7-aaa3905ceefa",
+        "amount_minor": 12000,
+        "provider_ref": "rfnd_c8441d3267074c75847b",
+        "response_digest": "e2c88195b9277c1b737f0a2ac53cc993720d597e278ff078dbf0e25500d6cf10",
+        "ledger_refunded_total_minor": 12000
+      },
+      "previous_hash": "70240255bdff33b9b371f1bf55ab187126a7b8095c2dba2d457fb011802331dc",
+      "record_hash": "77cfbdd2e83a54d0abe75ef4d21327d8e4b560d570505dd766ebfefe40e4abd3",
+      "signature": "QDgv05jQlG90BlNR1wsZgBBaU5JuGhnyA6Chst8p3/9DWbyAID6hhrEX8faLsn+E8stGXYQFpkfL7p5056/TBg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 6,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_5f2b",
+        "method": "bearer_token_sha256",
+        "agent_name": "Support Agent 01"
+      },
+      "previous_hash": "77cfbdd2e83a54d0abe75ef4d21327d8e4b560d570505dd766ebfefe40e4abd3",
+      "record_hash": "9dc6f1b0c294280b45efb9505e03c062dea5847844080bfce79a279f49d024df",
+      "signature": "kHX0dpaIhut/mzr4l9MPYXNT8oUonp5VdU+8UK3gm5T/d0Jdnsvl+ZXW3E1jN8gEK9frdDfRnxudSLkMyH9TCw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 7,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "f60c9874173d44db93cdd6dfc1856c8fae7fedae860711e56d4639e94edada41",
+        "reason": "Partial refund",
+        "agent_id": "wrt_agent_5f2b",
+        "currency": "USD",
+        "recipient": "Acme Industries",
+        "expires_at": "2026-08-02T19:49:38.048Z",
+        "request_id": "d7875355-4062-4b38-83f6-51c4344b1f5c",
+        "resource_id": "payment_122",
+        "amount_minor": 4500,
+        "requested_at": "2026-08-02T19:47:38.048Z",
+        "idempotency_key": "live-a2"
+      },
+      "previous_hash": "9dc6f1b0c294280b45efb9505e03c062dea5847844080bfce79a279f49d024df",
+      "record_hash": "2b499b98d0aabf2fdde6308dd9c8aea4fb32fcd0c1af9129f0eefa2cf321c61e",
+      "signature": "rVcQeb3vCK0nFGr7F87R15xd3V0WaBblWiBSn18YVhTSbf1ViUgCrrpmw9vNckWoe0+fno6UYv/Y6JD9tYLzDA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 8,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "ALLOW",
+        "evaluator": "policy@deterministic",
+        "request_id": "d7875355-4062-4b38-83f6-51c4344b1f5c",
+        "reason_code": "WITHIN_AUTOMATIC_LIMIT",
+        "amount_minor": 4500,
+        "policy_version": 1
+      },
+      "previous_hash": "2b499b98d0aabf2fdde6308dd9c8aea4fb32fcd0c1af9129f0eefa2cf321c61e",
+      "record_hash": "fb4bde802c02f95905b60f97030b868b5d4372e373e126df526244e33f4ebbf5",
+      "signature": "7UQewVeK62aKu+wax7C8rt6JuSEq9+zD0gDwNIo9gRAkY/C7eXUgzKLJ52kbsE/2Pz5qv/6DJkJYIE+oFrw+BA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 9,
+      "event_type": "execution.started",
+      "payload": {
+        "digest": "f60c9874173d44db93cdd6dfc1856c8fae7fedae860711e56d4639e94edada41",
+        "request_id": "d7875355-4062-4b38-83f6-51c4344b1f5c"
+      },
+      "previous_hash": "fb4bde802c02f95905b60f97030b868b5d4372e373e126df526244e33f4ebbf5",
+      "record_hash": "654af95a94ea8ddd18fc957ab425c673e6e5bfa3381d580fd91c5c5351a69d1f",
+      "signature": "YEpBVxj5XqdDwhP8O0sHk02K7XKFv9b4MBiUIskjxlCPzJKwbSCH0rIcfZYBR5pTjmMTToxbzmKbcA3iPllkDw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 10,
+      "event_type": "execution.succeeded",
+      "payload": {
+        "request_id": "d7875355-4062-4b38-83f6-51c4344b1f5c",
+        "amount_minor": 4500,
+        "provider_ref": "rfnd_0cbfa358a3814694bb73",
+        "response_digest": "7200df2cbb0ec2bfa8c1f2e77128e38258a40f76b5e3254fc6c81de1b3784fa3",
+        "ledger_refunded_total_minor": 16500
+      },
+      "previous_hash": "654af95a94ea8ddd18fc957ab425c673e6e5bfa3381d580fd91c5c5351a69d1f",
+      "record_hash": "a42be47161b340ff64e4b0c3faf04d62da64fa58ee434609f92d3e6b410d3996",
+      "signature": "A97IQZGWZOd2h5+1xh7mCgwAS/OY1Nvo3XFbO3axQsPJyPl60SESQ3eR/DpkuC2c53+CDy1VJx98kijQ0oAtBw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 11,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_5f2b",
+        "method": "bearer_token_sha256",
+        "agent_name": "Support Agent 01"
+      },
+      "previous_hash": "a42be47161b340ff64e4b0c3faf04d62da64fa58ee434609f92d3e6b410d3996",
+      "record_hash": "94543f6d875ef9d6cf26a859a8aa8fef5b9fa70c2dd2e1774901c0b0bac1846f",
+      "signature": "X4crbw4jcwcZz807SlLa1PCEZMnd9Wd/sUjz6esbGNND0O/Q8ut8PLGhy8xUSuKJnhaYP88+H4WMNv+iyVEsBw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 12,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "2dd11602a84c122e88c05200f8e3dc99533e8d98cbdb899a99372a923ef13e47",
+        "reason": "Contract cancellation",
+        "agent_id": "wrt_agent_5f2b",
+        "currency": "USD",
+        "recipient": "Contoso Ltd",
+        "expires_at": "2026-08-02T19:49:38.968Z",
+        "request_id": "30ad63f4-588d-4ee6-9428-48e2160b20a2",
+        "resource_id": "payment_124",
+        "amount_minor": 750000,
+        "requested_at": "2026-08-02T19:47:38.968Z",
+        "idempotency_key": "live-c1"
+      },
+      "previous_hash": "94543f6d875ef9d6cf26a859a8aa8fef5b9fa70c2dd2e1774901c0b0bac1846f",
+      "record_hash": "bb9308aacd4731c4c0ac4f0181d9cc8f810f8c34145e2cb22e7ad55e2ec83b33",
+      "signature": "lbantlfjYeBzwrotRDdXyApxpoE/eSXqkcvrthWroxBbuNWb2xz/vlCSfCzvwnZLZlhVBenPh01VTPvLEiUHDg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 13,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "BLOCK",
+        "evaluator": "policy@deterministic",
+        "request_id": "30ad63f4-588d-4ee6-9428-48e2160b20a2",
+        "reason_code": "EXCEEDS_HARD_MAXIMUM",
+        "amount_minor": 750000,
+        "policy_version": 1
+      },
+      "previous_hash": "bb9308aacd4731c4c0ac4f0181d9cc8f810f8c34145e2cb22e7ad55e2ec83b33",
+      "record_hash": "a2e0b13a3bafd431bfbce211fc8b81aa94f7762091e9826aabc1d8ed700542a1",
+      "signature": "TROAXUon0qRqBKs5CdJTt5Qm+OZKqv9lXykmkgRDxO9Vwow9t83XNQcYYeOCDodmqxiIGsvtWAMK51kFmwnkCw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 14,
+      "event_type": "execution.blocked",
+      "payload": {
+        "reason": "EXCEEDS_HARD_MAXIMUM",
+        "request_id": "30ad63f4-588d-4ee6-9428-48e2160b20a2",
+        "provider_calls": 0,
+        "forwarded_to_executor": false
+      },
+      "previous_hash": "a2e0b13a3bafd431bfbce211fc8b81aa94f7762091e9826aabc1d8ed700542a1",
+      "record_hash": "5d2e7754ccea41231e5a40a34f5ae81c9377886875ccd6d895843c9f4520da1f",
+      "signature": "lg9YIRge73q7MKh7xvu8g8RvvEt8hpVdjDInCjFLzyYd7u12qvC6+W7akItu9OpQKy+EVqXRmG6Oj9rKfybxDQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 15,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_5f2b",
+        "method": "bearer_token_sha256",
+        "agent_name": "Support Agent 01"
+      },
+      "previous_hash": "5d2e7754ccea41231e5a40a34f5ae81c9377886875ccd6d895843c9f4520da1f",
+      "record_hash": "bbab45bd8dc07715b63dc6a41073bc46c83a81dd3244ce98df84dc7566437fa4",
+      "signature": "6JVAopZzdpcdsR/eHDox3oPOqbFiL6NBQiNpn6MyUQiINFcxmK5a/EcX1m7fWGYwCigHIyHXvZ59SSy1ZQ26CA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 16,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "f13328074304b163d99c31d4364b805b3f5b14ae81661d4eba400c2369287624",
+        "reason": "Customer requested refund",
+        "agent_id": "wrt_agent_5f2b",
+        "currency": "USD",
+        "recipient": "Northwind Traders",
+        "expires_at": "2026-08-02T19:49:39.719Z",
+        "request_id": "1879b06b-2728-4c82-a20a-819a4a7b3a83",
+        "resource_id": "payment_123",
+        "amount_minor": 240000,
+        "requested_at": "2026-08-02T19:47:39.719Z",
+        "idempotency_key": "live-b1"
+      },
+      "previous_hash": "bbab45bd8dc07715b63dc6a41073bc46c83a81dd3244ce98df84dc7566437fa4",
+      "record_hash": "00500dd4460e3bd2b14251f786b1be3325e3548a54fdb919cf66af2961cf4580",
+      "signature": "cZKwGM6hN0EHEOs0ito3NhPpUxZzg+UAOcpjEyWyR7Yu8nWniVXB/MBT7lIBT1deIj0yB0qrMd7MepgsPut2CA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 17,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "REVIEW",
+        "evaluator": "policy@deterministic",
+        "request_id": "1879b06b-2728-4c82-a20a-819a4a7b3a83",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "amount_minor": 240000,
+        "policy_version": 1
+      },
+      "previous_hash": "00500dd4460e3bd2b14251f786b1be3325e3548a54fdb919cf66af2961cf4580",
+      "record_hash": "4a86308bbb9b3e3c7fe2421074bce007a60d8a2067cb1d1853a157433d906c77",
+      "signature": "Td4rzOkcNWqxwzgcjn7yr91cCHCG8+HWtXgfoE6j/CIhsbsE2bysmNfo2g0puPWkSAAXNIbF7N8gVxBvs9ixCQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 18,
+      "event_type": "approval.requested",
+      "payload": {
+        "channel": "mobile",
+        "expires_at": "2026-08-02T19:49:39.902+00:00",
+        "nonce_hash": "549a6d887dc6953c6df91cf8f27618c921b44b23e881b267021a74522dbe4397",
+        "request_id": "1879b06b-2728-4c82-a20a-819a4a7b3a83",
+        "approval_id": "cabd05d0-bec2-4f1e-ac0c-19bb18cf71e8",
+        "bound_digest": "f13328074304b163d99c31d4364b805b3f5b14ae81661d4eba400c2369287624",
+        "expires_in_seconds": 120
+      },
+      "previous_hash": "4a86308bbb9b3e3c7fe2421074bce007a60d8a2067cb1d1853a157433d906c77",
+      "record_hash": "d4b59bd094895db3ddcb0d7c2bf5e517b180989d4f84e8161c8922fc08a8d1f9",
+      "signature": "tLMsbPfwIweXvBnjdB3M2E1VrSOibRkETCcD9seOMdQCIwu8zjgwOL1uL1x+WTTQ1J1ipBstZim69QqwpburBg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 19,
+      "event_type": "approval.denied",
+      "payload": {
+        "channel": "mobile",
+        "approver": "vegancodesofficial@gmail.com",
+        "latency_ms": 751,
+        "request_id": "1879b06b-2728-4c82-a20a-819a4a7b3a83",
+        "approval_id": "cabd05d0-bec2-4f1e-ac0c-19bb18cf71e8",
+        "bound_digest": "f13328074304b163d99c31d4364b805b3f5b14ae81661d4eba400c2369287624",
+        "nonce_consumed": true
+      },
+      "previous_hash": "d4b59bd094895db3ddcb0d7c2bf5e517b180989d4f84e8161c8922fc08a8d1f9",
+      "record_hash": "9b3cdac0e0fa9cebae379d60738a95d82ff159391784f45e8497bba5171418f2",
+      "signature": "EmRxM+yNda374uI/VFLF+j3VS0GmJd+8wPMQ01Tn/aglcc1gz8GXH7EPOUyYA/Hb890hBm59vmQBrMwcUOxuCw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 20,
+      "event_type": "execution.blocked",
+      "payload": {
+        "reason": "HUMAN_DENIED",
+        "request_id": "1879b06b-2728-4c82-a20a-819a4a7b3a83",
+        "provider_calls": 0,
+        "forwarded_to_executor": false
+      },
+      "previous_hash": "9b3cdac0e0fa9cebae379d60738a95d82ff159391784f45e8497bba5171418f2",
+      "record_hash": "a26e9ff3ddc39d1868963226f31c67d9421457e4d5ee0e404552bada8f9633f8",
+      "signature": "4Y+2dp9WpsRhpJQyfDdgKHa1Gs03eirmkVPl1RoUlKc2hoOOuQeqp9NQtRTTR33/3yPqI7yfTB6sRPblqXvcDQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 21,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_5f2b",
+        "method": "bearer_token_sha256",
+        "agent_name": "Support Agent 01"
+      },
+      "previous_hash": "a26e9ff3ddc39d1868963226f31c67d9421457e4d5ee0e404552bada8f9633f8",
+      "record_hash": "15a3eafac0584d06b1d4956d3432a5209539e776f77bf91367706b4498cb9a2f",
+      "signature": "fmrLw4cJ5cudEOIQ61R8WJsBvB3FxJ/CIrHiCe4EFlCz6VzZUOA00ngEBQmEE8Ft/nuvuPZSbGEcrvabnuNuDg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 22,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "a4c0ce9d9b3a217260fa0324f24b62526ae5115fa2eb5a543cb0a8612c406ddd",
+        "reason": "Escalated refund",
+        "agent_id": "wrt_agent_5f2b",
+        "currency": "USD",
+        "recipient": "Northwind Traders",
+        "expires_at": "2026-08-02T19:49:41.277Z",
+        "request_id": "e5ef81a8-c3f6-4619-a4e7-312f7b03be1b",
+        "resource_id": "payment_123",
+        "amount_minor": 180000,
+        "requested_at": "2026-08-02T19:47:41.277Z",
+        "idempotency_key": "live-b2"
+      },
+      "previous_hash": "15a3eafac0584d06b1d4956d3432a5209539e776f77bf91367706b4498cb9a2f",
+      "record_hash": "91d8ad6f5e77c728d3ee239013680c55d8a46ee61a400433d5bd3f370dfdc4aa",
+      "signature": "LloYosPISAMwVcZeUsN/tCatGjBcf7UocnKF0NMvv/yFpy1TSaJ1fH5gnG9BmehS9dwGjb5xeT8e7ih8Y7Y8AQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 23,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "REVIEW",
+        "evaluator": "policy@deterministic",
+        "request_id": "e5ef81a8-c3f6-4619-a4e7-312f7b03be1b",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "amount_minor": 180000,
+        "policy_version": 1
+      },
+      "previous_hash": "91d8ad6f5e77c728d3ee239013680c55d8a46ee61a400433d5bd3f370dfdc4aa",
+      "record_hash": "1703812287ea5685dcb682b8048b00700faec61e365f091603de6b7eb75ad133",
+      "signature": "bJKksrKrhDo1JRspsB+Htu/jHJ6U2+73SxIZ3H0m8lK/mpru7X0TU+ZorhEQ6FPYoseKo2iNVrX7J6yX5+bjBg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 24,
+      "event_type": "approval.requested",
+      "payload": {
+        "channel": "mobile",
+        "expires_at": "2026-08-02T19:49:41.407+00:00",
+        "nonce_hash": "b02fc0779082d68829d881853b0229b360114094f0ccc72d8d2bfe7d6a0b8bd0",
+        "request_id": "e5ef81a8-c3f6-4619-a4e7-312f7b03be1b",
+        "approval_id": "7fc1a2e0-7be3-4854-8026-899fdee58fbc",
+        "bound_digest": "a4c0ce9d9b3a217260fa0324f24b62526ae5115fa2eb5a543cb0a8612c406ddd",
+        "expires_in_seconds": 120
+      },
+      "previous_hash": "1703812287ea5685dcb682b8048b00700faec61e365f091603de6b7eb75ad133",
+      "record_hash": "0179af9160f09913291188113e997a59bb0fe115a947d8f9fd1de1d791a30751",
+      "signature": "6wYWSdeRdpuxlqrTHMFU4Ddv9HwBuopdPZBfTDxgMeEeXptAq95nseUsJsUKWzcAYPPasUrMQ2LwPvQcTxVPBg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 25,
+      "event_type": "approval.expired",
+      "payload": {
+        "note": "No answer inside the approval window. Silence is a denial.",
+        "reason": "APPROVAL_EXPIRED",
+        "request_id": "e5ef81a8-c3f6-4619-a4e7-312f7b03be1b",
+        "approval_id": "7fc1a2e0-7be3-4854-8026-899fdee58fbc"
+      },
+      "previous_hash": "0179af9160f09913291188113e997a59bb0fe115a947d8f9fd1de1d791a30751",
+      "record_hash": "f9df2473881fac6197f36be88deafa7bc932fce65b6f2790279c31b34ddcdf44",
+      "signature": "i5HF8r2xNiYHe4iPKx0XnjonH/yWgRlOw1NBE64se7INMcRaNe3Evnu1DqzS3yyDDQXYIYssxiePEo7qKRvlDw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 26,
+      "event_type": "execution.blocked",
+      "payload": {
+        "reason": "APPROVAL_EXPIRED",
+        "request_id": "e5ef81a8-c3f6-4619-a4e7-312f7b03be1b",
+        "provider_calls": 0,
+        "forwarded_to_executor": false
+      },
+      "previous_hash": "f9df2473881fac6197f36be88deafa7bc932fce65b6f2790279c31b34ddcdf44",
+      "record_hash": "69db7aa1ae0a29998b2e3c14881fe961fa641c1e0e422c5add7e444f7f5da94a",
+      "signature": "m5ZMcmJcAeAGuqDNKVn1fC45upG8xujUHg4hetzJ9UBoRdpaGWqyT8guIRvUCCesnwa9OeT8XAdr8FTUmfCJCQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 27,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_3mEB",
+        "method": "bearer_token_sha256",
+        "agent_name": "ios-demo-agent"
+      },
+      "previous_hash": "69db7aa1ae0a29998b2e3c14881fe961fa641c1e0e422c5add7e444f7f5da94a",
+      "record_hash": "ffdea118a490c1d90dfbabe464b03b7eb7e5fadb6b1ead3d4f59ad90fa0bee45",
+      "signature": "HNuS2GuE6YGkbzs13c906gzK6ev/s8lBv3eMwPrERrmr3pH0FE5RJpjYU3l/5m2hIxcHLi534yHlnf2GKHGXDA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 28,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "ad040f5b42bb1a2d689d5335d09b6150f0415254dac0b81f50578c640e3bddd4",
+        "reason": "TCK-1002: URGENT: refund required immediately",
+        "agent_id": "wrt_agent_3mEB",
+        "currency": "USD",
+        "recipient": "Northwind Traders",
+        "expires_at": "2026-08-02T20:33:30.893Z",
+        "request_id": "53aed0d7-a2d7-424e-9845-280560e1e7d8",
+        "resource_id": "payment_123",
+        "amount_minor": 240000,
+        "requested_at": "2026-08-02T20:31:30.893Z",
+        "idempotency_key": "agent-run:12074f240d2c52ea20d23f91af7ea689"
+      },
+      "previous_hash": "ffdea118a490c1d90dfbabe464b03b7eb7e5fadb6b1ead3d4f59ad90fa0bee45",
+      "record_hash": "e78330e3d3cd4689635613e5b8dee5783aa2d9faf43caa7dc79594306012384d",
+      "signature": "fBZ+S6UC+1GkG6Er639ctiYV2FJJ3NzLmmYbNUoYGeiRARUZyyK7LSe+R3rG2H2IZAAxYxV000IZR9QJHbzRDg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 29,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "REVIEW",
+        "evaluator": "policy@deterministic",
+        "request_id": "53aed0d7-a2d7-424e-9845-280560e1e7d8",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "amount_minor": 240000,
+        "policy_version": 1
+      },
+      "previous_hash": "e78330e3d3cd4689635613e5b8dee5783aa2d9faf43caa7dc79594306012384d",
+      "record_hash": "71d7ca5d7281af9fdf443396535bfc765ee731f2aa89d0567a88547906ea91fd",
+      "signature": "kp54eTRQ+L0fZMEEaZB9cCz4xyzQ/O4N9iDYJ/psm+9rKvqfeRIMiO/JW/asmd8DwChYGiizhX6h8xm0fGtxDQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 30,
+      "event_type": "approval.requested",
+      "payload": {
+        "channel": "mobile",
+        "expires_at": "2026-08-02T20:33:31.117+00:00",
+        "nonce_hash": "5bdfe66ce60e70cf003fd1e041de3a5251ea129398a710b18e5379bb868ada8f",
+        "request_id": "53aed0d7-a2d7-424e-9845-280560e1e7d8",
+        "approval_id": "75657b11-a2bb-4d0b-b571-5d9bdceb7e65",
+        "bound_digest": "ad040f5b42bb1a2d689d5335d09b6150f0415254dac0b81f50578c640e3bddd4",
+        "expires_in_seconds": 120
+      },
+      "previous_hash": "71d7ca5d7281af9fdf443396535bfc765ee731f2aa89d0567a88547906ea91fd",
+      "record_hash": "2defc44bd4f0be6a1fc2fa8b3498bd681e3a26c01d65709a8f8ba9ed66160892",
+      "signature": "PqDFSvdUGNCVTk+3U8gePdMtTVOmAKSLEdznOHt3gECHDlaiIRRGlfkYxk9O6oFMgbTW+Wv9k4YLBf2Be7iDAg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 31,
+      "event_type": "agent.fallback_selected",
+      "payload": {
+        "model": "scripted",
+        "status": "PENDING_APPROVAL",
+        "offered": [],
+        "scripted": true,
+        "selected": "escalate_case",
+        "iterations": 1,
+        "request_id": "53aed0d7-a2d7-424e-9845-280560e1e7d8",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "ticket_reference": "TCK-1002"
+      },
+      "previous_hash": "2defc44bd4f0be6a1fc2fa8b3498bd681e3a26c01d65709a8f8ba9ed66160892",
+      "record_hash": "101851c8409e938a71d063e14783c824ec1884b42e01ad7921e9a9bc9c7adb2f",
+      "signature": "cx406CetwbmrmHjYCz5U8kYzXqCL0dgcTb6djUh65Td0FEWtcs+EbogITCSPSpMoWL9IEIdcZFyjbB1NiB2JDg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 32,
+      "event_type": "approval.denied",
+      "payload": {
+        "channel": "mobile",
+        "approver": "demo@warrant.test",
+        "latency_ms": 14369,
+        "request_id": "53aed0d7-a2d7-424e-9845-280560e1e7d8",
+        "approval_id": "75657b11-a2bb-4d0b-b571-5d9bdceb7e65",
+        "bound_digest": "ad040f5b42bb1a2d689d5335d09b6150f0415254dac0b81f50578c640e3bddd4",
+        "nonce_consumed": true
+      },
+      "previous_hash": "101851c8409e938a71d063e14783c824ec1884b42e01ad7921e9a9bc9c7adb2f",
+      "record_hash": "7ca93ea1bd43f66e154dca087be9284665e9cceb439e58919a66ad811abae787",
+      "signature": "2RhbU+AgpoC7tosJU4G/lDKLEhxqG8lZ3f+Gj3kbDuAOU1Ff3ZxldrNgSk0KhnCWkWq4gZYqm/n29SgI0KTbCw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 33,
+      "event_type": "execution.blocked",
+      "payload": {
+        "reason": "HUMAN_DENIED",
+        "request_id": "53aed0d7-a2d7-424e-9845-280560e1e7d8",
+        "provider_calls": 0,
+        "forwarded_to_executor": false
+      },
+      "previous_hash": "7ca93ea1bd43f66e154dca087be9284665e9cceb439e58919a66ad811abae787",
+      "record_hash": "1b1e5fcbbb5b7ffec22c01ca59939f5b2ab3f85e6622a549428f407427d231ce",
+      "signature": "/FaMkKhuTH4xcDZNTlGTaPmbt7+GoOZqDGtbPW8TYbxN7hMv1Np6G2cdvoW3iyTpZApD4rIMHTqlDEywM6C3Cw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 34,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_3mEB",
+        "method": "bearer_token_sha256",
+        "agent_name": "ios-demo-agent"
+      },
+      "previous_hash": "1b1e5fcbbb5b7ffec22c01ca59939f5b2ab3f85e6622a549428f407427d231ce",
+      "record_hash": "2ec7b07623db03e14632073940264b484500f995dc41fd88c986852b8e986eb4",
+      "signature": "Cc52fI2SYX3WnLHsQuHs9w18dRT/G+dnbAnBCppgJwqjSGjdjZul/PKQLVQ2VuW5XAoL0lzB/J3Fa4Sxyz7aAA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 35,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "9d83b47bc86c4ef0a76b17bb5704a826eb8831e47e584993dc77dc6dd5af7a23",
+        "reason": "customer says order unusable",
+        "agent_id": "wrt_agent_3mEB",
+        "currency": "USD",
+        "recipient": "Northwind Traders",
+        "expires_at": "2026-08-02T20:36:09.486Z",
+        "request_id": "bb66064d-aa41-4988-813f-e6e5c6a7775d",
+        "resource_id": "payment_123",
+        "amount_minor": 240000,
+        "requested_at": "2026-08-02T20:34:09.486Z",
+        "idempotency_key": "mcp-1785702849"
+      },
+      "previous_hash": "2ec7b07623db03e14632073940264b484500f995dc41fd88c986852b8e986eb4",
+      "record_hash": "faa25a468ed85d7e30101171f10e599f5a712528090117fafebaf3dc5edcba95",
+      "signature": "vP/4rspJJmhWXOFUtmRHSlXURmlOvD7Ltp5pjXv7yxQ1rRMrM/VLscyD7vfjlxQazQKzwJb6EV7RM7Hkaag0Cg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 36,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "REVIEW",
+        "evaluator": "policy@deterministic",
+        "request_id": "bb66064d-aa41-4988-813f-e6e5c6a7775d",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "amount_minor": 240000,
+        "policy_version": 1
+      },
+      "previous_hash": "faa25a468ed85d7e30101171f10e599f5a712528090117fafebaf3dc5edcba95",
+      "record_hash": "3f714203399b8a29e6f904e50d394eaea6a40c1e0709e11857c30ddb8f5d0902",
+      "signature": "JZzRYJasdl9h/gFYMPweRLx1reJxlZZQsRQJBk/q6m3/1KFRuvMwJ+xsgPoKhCpBJVej3+VZFZuoEAEglCTACg=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 37,
+      "event_type": "approval.requested",
+      "payload": {
+        "channel": "mobile",
+        "expires_at": "2026-08-02T20:36:09.663+00:00",
+        "nonce_hash": "a4acd46ff99345a2526eb9d361207f17f7c627c5cce7c0b1df10566affd4a177",
+        "request_id": "bb66064d-aa41-4988-813f-e6e5c6a7775d",
+        "approval_id": "4d877c55-5185-4843-a5cf-8f4f7f7b49d4",
+        "bound_digest": "9d83b47bc86c4ef0a76b17bb5704a826eb8831e47e584993dc77dc6dd5af7a23",
+        "expires_in_seconds": 120
+      },
+      "previous_hash": "3f714203399b8a29e6f904e50d394eaea6a40c1e0709e11857c30ddb8f5d0902",
+      "record_hash": "622dcc632d0d73319503fa4e919f513b863ee8dda152569746a4b2d3d09944d5",
+      "signature": "Bbv+uTBThDTIqCvhQKRG/a3YSGvEgXJltHNC+wnWNvQEnHti+0m7jFE7ivqEuv7IOUMc4UxK9nSRoGYaiIfcBw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 38,
+      "event_type": "approval.expired",
+      "payload": {
+        "note": "No answer inside the approval window. Silence is a denial.",
+        "reason": "APPROVAL_EXPIRED",
+        "request_id": "bb66064d-aa41-4988-813f-e6e5c6a7775d",
+        "approval_id": "4d877c55-5185-4843-a5cf-8f4f7f7b49d4"
+      },
+      "previous_hash": "622dcc632d0d73319503fa4e919f513b863ee8dda152569746a4b2d3d09944d5",
+      "record_hash": "ee32cbef065329e939b25206d30391fb4717af06b11c4c0ad236db09c53afc24",
+      "signature": "dKvX4XD/kd5Voc41Q58Zdkv3wM4eimhnQccBEPPS2zz9GyOztRGJbf09A+3KdYr/2ef3QDIOdT3yPJjlHUjjBA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 39,
+      "event_type": "execution.blocked",
+      "payload": {
+        "reason": "APPROVAL_EXPIRED",
+        "request_id": "bb66064d-aa41-4988-813f-e6e5c6a7775d",
+        "provider_calls": 0,
+        "forwarded_to_executor": false
+      },
+      "previous_hash": "ee32cbef065329e939b25206d30391fb4717af06b11c4c0ad236db09c53afc24",
+      "record_hash": "cdf7ded77a897f5d11bf77200f1f5e7189bc366e5bd0eed10ed4ce0a73ed14dc",
+      "signature": "nASyF3TdBHwmdA+0rSLVTL2b2+0+mUQJgX9WUKA8yE3dfINOVyYVEMI3qYs/7rKyqwj/5gudzjDyTVUdB809AA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 40,
+      "event_type": "identity.verified",
+      "payload": {
+        "agent": "wrt_agent_3mEB",
+        "method": "bearer_token_sha256",
+        "agent_name": "ios-demo-agent"
+      },
+      "previous_hash": "cdf7ded77a897f5d11bf77200f1f5e7189bc366e5bd0eed10ed4ce0a73ed14dc",
+      "record_hash": "57a33a850f81f34e5c46485863b15e7d4a93f39e0f740068667f0cd29d70891b",
+      "signature": "yACfNDM4mMoKl7Tf1Ye0ujMtALQLpOYv4cvxnsXGYOyzYEuFOoVW/02qHXTKUSaTOQXaqiDveOF1mmIbIK3MBQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 41,
+      "event_type": "action.requested",
+      "payload": {
+        "tool": "issue_refund",
+        "digest": "4a744305aa8d956167aa510ecb351d0570e65da9095a00049355ad758b325f1f",
+        "reason": "TCK-1002: URGENT: refund required immediately",
+        "agent_id": "wrt_agent_3mEB",
+        "currency": "USD",
+        "recipient": "Northwind Traders",
+        "expires_at": "2026-08-02T20:43:19.103Z",
+        "request_id": "3079a6a0-e864-48f4-bbe5-96a511056616",
+        "resource_id": "payment_123",
+        "amount_minor": 240000,
+        "requested_at": "2026-08-02T20:41:19.103Z",
+        "idempotency_key": "agent-run:f92eb50ec31491e6b6fc9440d4f27dc9"
+      },
+      "previous_hash": "57a33a850f81f34e5c46485863b15e7d4a93f39e0f740068667f0cd29d70891b",
+      "record_hash": "ed23dd0a3e1ee97aad1a227f986206d5bd6e6b54c1680b73682d1063922bba34",
+      "signature": "2fXjeBxJeqFrKENw41AkVsG+GXKDOPVA997BW4IxDN20OfEW1NiD36GhdFzdBkf1VVsI/l6hxPJhi+32ibZZDw=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 42,
+      "event_type": "policy.evaluated",
+      "payload": {
+        "rule": "automatic_limit_minor=50000; review_limit_minor=500000",
+        "decision": "REVIEW",
+        "evaluator": "policy@deterministic",
+        "request_id": "3079a6a0-e864-48f4-bbe5-96a511056616",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "amount_minor": 240000,
+        "policy_version": 1
+      },
+      "previous_hash": "ed23dd0a3e1ee97aad1a227f986206d5bd6e6b54c1680b73682d1063922bba34",
+      "record_hash": "462aa658531055b6b75883ea969025181ef83dab4fe2998122539c62c91a3671",
+      "signature": "2RbzmnDLh8iqTaRpnWy+myUh788L+0vuzUqSS88heyI07E5CgmKC02xTxfnJVitxAWNs6Xbz4kD3TzdPxmbUCQ=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 43,
+      "event_type": "approval.requested",
+      "payload": {
+        "channel": "mobile",
+        "expires_at": "2026-08-02T20:43:19.36+00:00",
+        "nonce_hash": "b500927b03e8c1cebd197a96dfe44aff94a41de5c483827b7d79bcc265966dc8",
+        "request_id": "3079a6a0-e864-48f4-bbe5-96a511056616",
+        "approval_id": "eb07ff55-625e-492f-9c40-834603b6a14f",
+        "bound_digest": "4a744305aa8d956167aa510ecb351d0570e65da9095a00049355ad758b325f1f",
+        "expires_in_seconds": 120
+      },
+      "previous_hash": "462aa658531055b6b75883ea969025181ef83dab4fe2998122539c62c91a3671",
+      "record_hash": "f261ae4c39a328e48a2708e19b539cf3fe38268594459a14ef25e1674d7a1fcf",
+      "signature": "Ewlzy4Cg7qdzHDOu0CQpNpRabH4Y/29rnHWHAUM3dqCAvPxzbHRU1ODamKpb6Z1qXMjroG27WjG4zASjw6PODA=="
+    },
+    {
+      "org_id": "eececdba-5d73-431d-ab10-891677df1bf8",
+      "sequence": 44,
+      "event_type": "agent.fallback_selected",
+      "payload": {
+        "model": "scripted",
+        "status": "PENDING_APPROVAL",
+        "offered": [],
+        "scripted": true,
+        "selected": "escalate_case",
+        "iterations": 1,
+        "request_id": "3079a6a0-e864-48f4-bbe5-96a511056616",
+        "reason_code": "REQUIRES_HUMAN_APPROVAL",
+        "ticket_reference": "TCK-1002"
+      },
+      "previous_hash": "f261ae4c39a328e48a2708e19b539cf3fe38268594459a14ef25e1674d7a1fcf",
+      "record_hash": "2814eb573a2976a67100e6a9cba7ae1e9051f3c55b958808b3c90cf6aed667a5",
+      "signature": "oW9ZjwdR8mcCGuI+4c43O2Q6SJ0E0IS+P+hhSnDyhjiH399sdsClzDF7klClHqQcIRJy1wDMpqWVuyhwngnwDA=="
+    }
+  ]
+}

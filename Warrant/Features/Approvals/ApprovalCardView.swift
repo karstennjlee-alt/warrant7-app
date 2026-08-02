@@ -42,7 +42,7 @@ struct ApprovalCardView: View {
                 Text("Approval request").warrantType(.label).foregroundStyle(Ink.ink)
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Text(current.id.uppercased()).warrantType(.monoSmall).foregroundStyle(Ink.mute)
+                Text(current.shortID).warrantType(.monoSmall).foregroundStyle(Ink.mute)
             }
         }
         .onAppear { appearedAt = Date() }
@@ -190,7 +190,7 @@ struct ApprovalCardView: View {
                             if paragraph == current.sourceInjection {
                                 Text(paragraph)
                                     .warrantType(.mono)
-                                    .foregroundStyle(Color(hex: 0xA8362A))
+                                    .foregroundStyle(Ink.broken)
                                     .fixedSize(horizontal: false, vertical: true)
                                     .padding(.horizontal, 13)
                                     .padding(.vertical, 11)
@@ -308,7 +308,7 @@ struct ApprovalCardView: View {
                 .id(slideID)
 
             Button("Deny") { denyTapped() }
-                .buttonStyle(OutlineButtonStyle(color: Ink.red, border: Color(hex: 0xE6D2CF)))
+                .buttonStyle(OutlineButtonStyle(color: Ink.red, border: Ink.brokenLine))
                 .disabled(isSubmitting)
                 .accessibilityLabel("Deny \(current.amount.spelledOut()) to \(current.recipient)")
 
