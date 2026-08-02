@@ -1,0 +1,25 @@
+// Copy to Config.xcconfig and fill in the blanks. Config.xcconfig is gitignored.
+//
+// Nothing in this file is secret, and nothing secret may be added to it. Values here land in
+// the built product's build settings and, where referenced from Info.plist, in the app bundle
+// where anyone with the .ipa can read them.
+//
+// SUPABASE_ANON_KEY is publishable by design. It identifies the project, not a user, and every
+// table it can reach is protected by Row Level Security. It is not a leak, and nobody should
+// later "fix" it by moving it to a server. What must never appear here — or in source, or in
+// Info.plist — is a service-role key, a downstream provider credential, or the ledger signing
+// private key. The device holds a session token (Keychain) and the organization's PUBLIC key.
+//
+// The $() in the URLs escapes the // so xcconfig does not read it as a comment.
+
+API_BASE_URL      = https:/$()/warrant.app
+SUPABASE_URL      = https:/$()/xxxx.supabase.co
+SUPABASE_ANON_KEY =
+
+APP_SCHEME        = warrant
+BUNDLE_ID         = dev.warrant.app
+BUNDLE_ID_PREFIX  = dev.warrant
+
+// Apple Developer team. Needed only for on-device builds, push, and TestFlight.
+// Leave empty to build and run in the simulator.
+TEAM_ID           =
